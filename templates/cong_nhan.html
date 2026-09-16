@@ -1,0 +1,1404 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Quản lý công nhân | ATLD</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+
+    <!-- =====================================================
+         CSS RIÊNG CHO VIBACON
+         Không sử dụng ảnh PNG
+         ===================================================== -->
+
+    <style>
+
+        /* KHUNG VIBACON */
+        .vibacon-box {
+            width: 240px;
+            height: 70px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            background: #ffffff;
+            border-radius: 14px;
+
+            box-shadow:
+                0 4px 14px rgba(0, 0, 0, 0.08);
+
+            box-sizing: border-box;
+
+            flex-shrink: 0;
+        }
+
+
+        /* CHỮ VIBACON */
+        .vibacon-text {
+            display: inline-block;
+
+            font-family:
+                Arial,
+                Helvetica,
+                sans-serif;
+
+            font-size: 38px;
+            font-weight: 900;
+
+            line-height: 1;
+            letter-spacing: 1px;
+
+            background: linear-gradient(
+                90deg,
+                #2563eb 0%,
+                #06b6d4 18%,
+                #22c55e 35%,
+                #eab308 52%,
+                #f97316 68%,
+                #ec4899 84%,
+                #8b5cf6 100%
+            );
+
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+
+            background-clip: text;
+
+            color: transparent;
+        }
+
+
+        /* HEADER */
+        .top-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            gap: 30px;
+        }
+
+
+        /* RESPONSIVE */
+        @media (max-width: 700px) {
+
+            .top-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .vibacon-box {
+                width: 220px;
+                height: 64px;
+            }
+
+            .vibacon-text {
+                font-size: 32px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <!-- =====================================================
+         SIDEBAR
+         ===================================================== -->
+
+    <aside class="sidebar">
+
+        <div class="logo">
+
+            <h2>ATLD</h2>
+
+            <p>
+                AN TOÀN LAO ĐỘNG
+            </p>
+
+        </div>
+
+
+        <nav>
+
+            <a href="/" class="menu-item">
+                🏠
+                <span>Trang chủ</span>
+            </a>
+
+
+            <a href="/cong-nhan" class="menu-item active">
+                👷
+                <span>Công nhân</span>
+            </a>
+
+
+            <a href="#" class="menu-item">
+                🦺
+                <span>Kiểm tra bảo hộ</span>
+            </a>
+
+
+            <a href="#" class="menu-item">
+                ⚠️
+                <span>Vi phạm</span>
+            </a>
+
+
+            <a href="#" class="menu-item">
+                🚧
+                <span>Nguy cơ</span>
+            </a>
+
+
+            <a href="#" class="menu-item">
+                📊
+                <span>Thống kê</span>
+            </a>
+
+
+            <a href="#" class="menu-item">
+                📄
+                <span>Báo cáo</span>
+            </a>
+
+        </nav>
+
+    </aside>
+
+
+
+    <!-- =====================================================
+         MAIN CONTENT
+         ===================================================== -->
+
+    <main class="main-content">
+
+
+        <!-- =================================================
+             HEADER
+             ================================================= -->
+
+        <header class="top-header">
+
+            <div>
+
+                <h1>
+                    QUẢN LÝ CÔNG NHÂN
+                </h1>
+
+                <p>
+                    Quản lý thông tin và theo dõi tình trạng an toàn
+                    của công nhân tại công trường
+                </p>
+
+            </div>
+
+
+            <!-- =================================================
+                 VIBACON
+                 KHÔNG CÓ IMG
+                 KHÔNG DÙNG PNG
+                 ================================================= -->
+
+            <div class="vibacon-box">
+
+                <span class="vibacon-text">
+                    VIBACON
+                </span>
+
+            </div>
+
+        </header>
+
+
+
+        <!-- =================================================
+             TÌM KIẾM
+             ================================================= -->
+
+        <section class="worker-search">
+
+            <div class="search-title">
+
+                <h2>
+                    Tìm kiếm công nhân
+                </h2>
+
+                <p>
+                    Tìm nhanh theo mã công nhân, họ tên hoặc số điện thoại
+                </p>
+
+            </div>
+
+
+            <div class="search-box">
+
+                <div class="search-input-wrapper">
+
+                    <span class="search-icon">
+                        ⌕
+                    </span>
+
+                    <input
+                        type="text"
+                        id="searchWorker"
+                        placeholder="Nhập mã, họ tên hoặc số điện thoại..."
+                        autocomplete="off">
+
+                </div>
+
+
+                <button
+                    type="button"
+                    class="search-button"
+                    onclick="searchWorker()">
+
+                    🔍 Tìm kiếm
+
+                </button>
+
+
+                <button
+                    type="button"
+                    class="add-worker-button"
+                    onclick="openAddWorker()">
+
+                    ＋ Thêm công nhân
+
+                </button>
+
+            </div>
+
+
+            <div
+                id="searchResultText"
+                class="search-result-text">
+
+                Hiển thị tất cả công nhân
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =================================================
+             THỐNG KÊ
+             ================================================= -->
+
+        <section class="dashboard-cards">
+
+
+            <div class="stat-card">
+
+                <div class="stat-icon">
+                    👷
+                </div>
+
+                <div>
+
+                    <p>
+                        Tổng công nhân
+                    </p>
+
+                    <h2>
+                        {{ workers|length }}
+                    </h2>
+
+                </div>
+
+            </div>
+
+
+
+            <div class="stat-card">
+
+                <div class="stat-icon">
+                    🟢
+                </div>
+
+                <div>
+
+                    <p>
+                        Đang làm việc
+                    </p>
+
+                    <h2>
+                        {{
+                            workers
+                            |selectattr(6, 'equalto', 'Đang làm việc')
+                            |list
+                            |length
+                        }}
+                    </h2>
+
+                </div>
+
+            </div>
+
+
+
+            <div class="stat-card">
+
+                <div class="stat-icon">
+                    🦺
+                </div>
+
+                <div>
+
+                    <p>
+                        Đã kiểm tra
+                    </p>
+
+                    <h2>
+                        0
+                    </h2>
+
+                </div>
+
+            </div>
+
+
+
+            <div class="stat-card">
+
+                <div class="stat-icon">
+                    ⚠️
+                </div>
+
+                <div>
+
+                    <p>
+                        Có vi phạm
+                    </p>
+
+                    <h2>
+                        0
+                    </h2>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =================================================
+             DANH SÁCH CÔNG NHÂN
+             ================================================= -->
+
+        <section class="panel worker-list-panel">
+
+            <div class="panel-header">
+
+                <div>
+
+                    <h2>
+                        Danh sách công nhân
+                    </h2>
+
+                    <p>
+                        Danh sách nhân sự đang được quản lý
+                    </p>
+
+                </div>
+
+
+                <div class="worker-count">
+
+                    <span id="visibleWorkerCount">
+                        {{ workers|length }}
+                    </span>
+
+                    công nhân
+
+                </div>
+
+            </div>
+
+
+
+            <div class="table-container">
+
+                <table id="workerTable">
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Mã CN
+                            </th>
+
+                            <th>
+                                Họ và tên
+                            </th>
+
+                            <th>
+                                Bộ phận
+                            </th>
+
+                            <th>
+                                Công việc
+                            </th>
+
+                            <th>
+                                Số điện thoại
+                            </th>
+
+                            <th>
+                                Trạng thái
+                            </th>
+
+                            <th>
+                                Thao tác
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+
+                        {% for worker in workers %}
+
+                        <tr class="worker-row">
+
+
+                            <td>
+
+                                <span class="worker-code">
+                                    {{ worker[1] }}
+                                </span>
+
+                            </td>
+
+
+
+                            <td>
+
+                                <div class="worker-name-cell">
+
+                                    <div class="worker-avatar">
+                                        {{ worker[2][0]|upper }}
+                                    </div>
+
+                                    <strong>
+                                        {{ worker[2] }}
+                                    </strong>
+
+                                </div>
+
+                            </td>
+
+
+
+                            <td>
+                                {{ worker[3] }}
+                            </td>
+
+
+
+                            <td>
+                                {{ worker[4] }}
+                            </td>
+
+
+
+                            <td>
+                                {{ worker[5] }}
+                            </td>
+
+
+
+                            <td>
+
+                                {% if worker[6] == "Đang làm việc" %}
+
+                                    <span class="status-active">
+
+                                        <span class="status-dot"></span>
+
+                                        Đang làm việc
+
+                                    </span>
+
+                                {% else %}
+
+                                    <span class="status-off">
+
+                                        <span class="status-dot"></span>
+
+                                        Nghỉ
+
+                                    </span>
+
+                                {% endif %}
+
+                            </td>
+
+
+
+                            <td>
+
+                                <div class="worker-actions">
+
+
+                                    <button
+                                        type="button"
+                                        class="view-worker-button"
+                                        onclick="showWorker(
+                                            '{{ worker[1] }}',
+                                            '{{ worker[2] }}',
+                                            '{{ worker[3] }}',
+                                            '{{ worker[4] }}',
+                                            '{{ worker[5] }}',
+                                            '{{ worker[6] }}'
+                                        )">
+
+                                        Xem hồ sơ
+
+                                    </button>
+
+
+
+                                    <form
+                                        action="/xoa-cong-nhan/{{ worker[0] }}"
+                                        method="POST"
+                                        style="display:inline;"
+                                        onsubmit="return confirmDelete('{{ worker[2] }}');">
+
+                                        <button
+                                            type="submit"
+                                            class="delete-worker-button">
+
+                                            Xóa
+
+                                        </button>
+
+                                    </form>
+
+                                </div>
+
+                            </td>
+
+                        </tr>
+
+
+                        {% else %}
+
+
+                        <tr id="emptyWorkerRow">
+
+                            <td
+                                colspan="7"
+                                class="empty-worker">
+
+                                <div class="empty-icon">
+                                    👷
+                                </div>
+
+                                <h3>
+                                    Chưa có công nhân
+                                </h3>
+
+                                <p>
+                                    Hãy thêm công nhân đầu tiên vào hệ thống.
+                                </p>
+
+                                <button
+                                    type="button"
+                                    class="empty-add-button"
+                                    onclick="openAddWorker()">
+
+                                    ＋ Thêm công nhân
+
+                                </button>
+
+                            </td>
+
+                        </tr>
+
+
+                        {% endfor %}
+
+
+
+                        <tr
+                            id="noSearchResult"
+                            style="display:none;">
+
+                            <td
+                                colspan="7"
+                                class="empty-worker">
+
+                                <div class="empty-icon">
+                                    🔍
+                                </div>
+
+                                <h3>
+                                    Không tìm thấy công nhân
+                                </h3>
+
+                                <p>
+                                    Hãy thử tìm bằng mã, họ tên hoặc số điện thoại khác.
+                                </p>
+
+                            </td>
+
+                        </tr>
+
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =================================================
+             HỒ SƠ CÔNG NHÂN
+             ================================================= -->
+
+        <section
+            class="worker-profile"
+            id="workerProfile"
+            style="display:none;">
+
+
+            <div class="profile-header">
+
+                <div>
+
+                    <div class="profile-label">
+                        HỒ SƠ CÔNG NHÂN
+                    </div>
+
+                    <h2 id="profileName">
+                        Thông tin công nhân
+                    </h2>
+
+                    <p id="profileCode">
+                        Mã công nhân
+                    </p>
+
+                </div>
+
+
+                <button
+                    type="button"
+                    class="close-profile-button"
+                    onclick="closeWorkerProfile()">
+
+                    ×
+
+                </button>
+
+            </div>
+
+
+
+            <div class="profile-grid">
+
+
+                <div class="profile-item">
+
+                    <span>
+                        Bộ phận
+                    </span>
+
+                    <strong id="profileDepartment">
+                        -
+                    </strong>
+
+                </div>
+
+
+                <div class="profile-item">
+
+                    <span>
+                        Công việc
+                    </span>
+
+                    <strong id="profileJob">
+                        -
+                    </strong>
+
+                </div>
+
+
+                <div class="profile-item">
+
+                    <span>
+                        Số điện thoại
+                    </span>
+
+                    <strong id="profilePhone">
+                        -
+                    </strong>
+
+                </div>
+
+
+                <div class="profile-item">
+
+                    <span>
+                        Trạng thái
+                    </span>
+
+                    <strong id="profileStatus">
+                        -
+                    </strong>
+
+                </div>
+
+
+            </div>
+
+
+
+            <!-- =================================================
+                 TÌNH TRẠNG AN TOÀN
+                 ================================================= -->
+
+            <div class="profile-safety">
+
+
+                <div class="profile-section-title">
+
+                    <div>
+
+                        <h3>
+                            Tình trạng an toàn
+                        </h3>
+
+                        <p>
+                            Theo dõi các thông tin an toàn của công nhân
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+
+                <div class="safety-summary">
+
+
+                    <div class="safety-box">
+
+                        <span class="safety-box-icon">
+                            🦺
+                        </span>
+
+                        <div>
+
+                            <strong>
+                                Bảo hộ lao động
+                            </strong>
+
+                            <p>
+                                Chưa kiểm tra
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+
+                    <div class="safety-box">
+
+                        <span class="safety-box-icon">
+                            ⚠️
+                        </span>
+
+                        <div>
+
+                            <strong>
+                                Vi phạm
+                            </strong>
+
+                            <p>
+                                0 trường hợp
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+
+                    <div class="safety-box">
+
+                        <span class="safety-box-icon">
+                            🚧
+                        </span>
+
+                        <div>
+
+                            <strong>
+                                Nguy cơ
+                            </strong>
+
+                            <p>
+                                0 nguy cơ
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+
+                    <div class="safety-box">
+
+                        <span class="safety-box-icon">
+                            📊
+                        </span>
+
+                        <div>
+
+                            <strong>
+                                Điểm an toàn
+                            </strong>
+
+                            <p>
+                                Chưa chấm điểm
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                </div>
+
+            </div>
+
+
+        </section>
+
+
+    </main>
+
+
+
+    <!-- =====================================================
+         MODAL THÊM CÔNG NHÂN
+         ===================================================== -->
+
+    <div
+        class="modal"
+        id="addWorkerModal"
+        style="display:none;">
+
+
+        <div class="modal-content">
+
+
+            <div class="modal-header">
+
+                <div>
+
+                    <div class="modal-label">
+                        QUẢN LÝ NHÂN SỰ
+                    </div>
+
+                    <h2>
+                        Thêm công nhân
+                    </h2>
+
+                    <p>
+                        Nhập thông tin công nhân mới
+                    </p>
+
+                </div>
+
+
+                <button
+                    type="button"
+                    class="modal-close"
+                    onclick="closeAddWorker()">
+
+                    ×
+
+                </button>
+
+            </div>
+
+
+
+            <form
+                action="/them-cong-nhan"
+                method="POST">
+
+
+                <div class="form-grid">
+
+
+                    <div class="form-group">
+
+                        <label>
+
+                            Mã công nhân
+
+                            <span>*</span>
+
+                        </label>
+
+                        <input
+                            type="text"
+                            name="ma_cn"
+                            placeholder="Ví dụ: CN001"
+                            required>
+
+                    </div>
+
+
+
+                    <div class="form-group">
+
+                        <label>
+
+                            Họ và tên
+
+                            <span>*</span>
+
+                        </label>
+
+                        <input
+                            type="text"
+                            name="ho_ten"
+                            placeholder="Nhập họ và tên"
+                            required>
+
+                    </div>
+
+
+
+                    <div class="form-group">
+
+                        <label>
+                            Bộ phận
+                        </label>
+
+                        <input
+                            type="text"
+                            name="bo_phan"
+                            placeholder="Ví dụ: Tổ xây dựng">
+
+                    </div>
+
+
+
+                    <div class="form-group">
+
+                        <label>
+                            Công việc
+                        </label>
+
+                        <input
+                            type="text"
+                            name="cong_viec"
+                            placeholder="Ví dụ: Thợ xây">
+
+                    </div>
+
+
+
+                    <div class="form-group">
+
+                        <label>
+                            Số điện thoại
+                        </label>
+
+                        <input
+                            type="text"
+                            name="so_dien_thoai"
+                            placeholder="Nhập số điện thoại">
+
+                    </div>
+
+
+
+                    <div class="form-group">
+
+                        <label>
+                            Trạng thái
+                        </label>
+
+                        <select name="trang_thai">
+
+                            <option value="Đang làm việc">
+                                Đang làm việc
+                            </option>
+
+                            <option value="Nghỉ">
+                                Nghỉ
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                </div>
+
+
+
+                <div class="modal-actions">
+
+
+                    <button
+                        type="button"
+                        class="cancel-button"
+                        onclick="closeAddWorker()">
+
+                        Hủy
+
+                    </button>
+
+
+                    <button
+                        type="submit"
+                        class="save-worker-button">
+
+                        ✓ Lưu công nhân
+
+                    </button>
+
+
+                </div>
+
+
+            </form>
+
+
+        </div>
+
+
+    </div>
+
+
+
+    <!-- =====================================================
+         JAVASCRIPT
+         ===================================================== -->
+
+    <script>
+
+
+        /* =================================================
+           TÌM KIẾM
+           ================================================= */
+
+        function searchWorker() {
+
+            const input =
+                document.getElementById("searchWorker");
+
+            const filter =
+                input.value
+                    .trim()
+                    .toLowerCase();
+
+            const rows =
+                document.querySelectorAll(
+                    "#workerTable tbody .worker-row"
+                );
+
+            const noResult =
+                document.getElementById(
+                    "noSearchResult"
+                );
+
+            const resultText =
+                document.getElementById(
+                    "searchResultText"
+                );
+
+            const count =
+                document.getElementById(
+                    "visibleWorkerCount"
+                );
+
+            let visible = 0;
+
+
+            rows.forEach(function(row) {
+
+                const text =
+                    row.innerText.toLowerCase();
+
+
+                if (
+                    filter === "" ||
+                    text.includes(filter)
+                ) {
+
+                    row.style.display = "";
+
+                    visible++;
+
+                } else {
+
+                    row.style.display = "none";
+
+                }
+
+            });
+
+
+            count.innerText = visible;
+
+
+            if (filter === "") {
+
+                resultText.innerText =
+                    "Hiển thị tất cả công nhân";
+
+            } else {
+
+                resultText.innerText =
+                    "Tìm thấy " +
+                    visible +
+                    " công nhân phù hợp";
+
+            }
+
+
+            if (
+                visible === 0 &&
+                rows.length > 0
+            ) {
+
+                noResult.style.display = "";
+
+            } else {
+
+                noResult.style.display = "none";
+
+            }
+
+        }
+
+
+
+        /* =================================================
+           TÌM KIẾM NGAY KHI GÕ
+           ================================================= */
+
+        document
+            .getElementById("searchWorker")
+            .addEventListener(
+                "input",
+                searchWorker
+            );
+
+
+
+        /* =================================================
+           HIỆN HỒ SƠ
+           ================================================= */
+
+        function showWorker(
+            code,
+            name,
+            department,
+            job,
+            phone,
+            status
+        ) {
+
+            document
+                .getElementById("workerProfile")
+                .style.display = "block";
+
+
+            document
+                .getElementById("profileName")
+                .innerText = name;
+
+
+            document
+                .getElementById("profileCode")
+                .innerText =
+                "Mã công nhân: " + code;
+
+
+            document
+                .getElementById("profileDepartment")
+                .innerText =
+                department || "-";
+
+
+            document
+                .getElementById("profileJob")
+                .innerText =
+                job || "-";
+
+
+            document
+                .getElementById("profilePhone")
+                .innerText =
+                phone || "-";
+
+
+            document
+                .getElementById("profileStatus")
+                .innerText =
+                status || "-";
+
+
+            document
+                .getElementById("workerProfile")
+                .scrollIntoView({
+                    behavior: "smooth",
+                    block: "start"
+                });
+
+        }
+
+
+
+        /* =================================================
+           ĐÓNG HỒ SƠ
+           ================================================= */
+
+        function closeWorkerProfile() {
+
+            document
+                .getElementById("workerProfile")
+                .style.display = "none";
+
+        }
+
+
+
+        /* =================================================
+           MỞ FORM THÊM
+           ================================================= */
+
+        function openAddWorker() {
+
+            document
+                .getElementById("addWorkerModal")
+                .style.display = "flex";
+
+
+            setTimeout(function() {
+
+                const firstInput =
+                    document.querySelector(
+                        '#addWorkerModal input[name="ma_cn"]'
+                    );
+
+
+                if (firstInput) {
+
+                    firstInput.focus();
+
+                }
+
+            }, 100);
+
+        }
+
+
+
+        /* =================================================
+           ĐÓNG FORM THÊM
+           ================================================= */
+
+        function closeAddWorker() {
+
+            document
+                .getElementById("addWorkerModal")
+                .style.display = "none";
+
+        }
+
+
+
+        /* =================================================
+           XÁC NHẬN XÓA
+           ================================================= */
+
+        function confirmDelete(name) {
+
+            return confirm(
+
+                "Bạn có chắc chắn muốn xóa công nhân \"" +
+                name +
+                "\" không?\n\n" +
+                "Dữ liệu của công nhân này sẽ bị xóa khỏi hệ thống."
+
+            );
+
+        }
+
+
+
+        /* =================================================
+           CLICK RA NGOÀI MODAL
+           ================================================= */
+
+        document
+            .getElementById("addWorkerModal")
+            .addEventListener(
+                "click",
+                function(event) {
+
+                    if (
+                        event.target === this
+                    ) {
+
+                        closeAddWorker();
+
+                    }
+
+                }
+            );
+
+
+
+        /* =================================================
+           PHÍM ESC
+           ================================================= */
+
+        document.addEventListener(
+            "keydown",
+            function(event) {
+
+                if (event.key === "Escape") {
+
+                    closeAddWorker();
+
+                }
+
+            }
+        );
+
+
+    </script>
+
+
+</body>
+
+</html>
