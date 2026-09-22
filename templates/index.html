@@ -1,225 +1,412 @@
 <!DOCTYPE html>
+
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Quản lý An toàn Công trường</title>
+```
+<title>Quản lý An toàn Công trường</title>
 
-    <link rel="stylesheet"
-          href="{{ url_for('static', filename='style.css') }}">
+<link rel="stylesheet"
+      href="{{ url_for('static', filename='style.css') }}">
+
+<style>
+    /* ===== VIBACON ===== */
+    .top-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 30px;
+    }
+
+    .vibacon-box {
+        width: 240px;
+        height: 70px;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        background: #ffffff;
+        border-radius: 14px;
+
+        box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+
+        box-sizing: border-box;
+        flex-shrink: 0;
+    }
+
+    .vibacon-text {
+        display: inline-block;
+
+        font-family: Arial, Helvetica, sans-serif;
+        font-size: 38px;
+        font-weight: 900;
+        line-height: 1;
+        letter-spacing: 1px;
+
+        background: linear-gradient(
+            90deg,
+            #2563eb 0%,
+            #06b6d4 18%,
+            #22c55e 35%,
+            #eab308 52%,
+            #f97316 68%,
+            #ec4899 84%,
+            #8b5cf6 100%
+        );
+
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        color: transparent;
+    }
+
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 700px) {
+
+        .top-header {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .vibacon-box {
+            width: 220px;
+            height: 64px;
+        }
+
+        .vibacon-text {
+            font-size: 32px;
+        }
+    }
+</style>
+```
+
 </head>
 
 <body>
 
-    <!-- THANH MENU BÊN TRÁI -->
-    <aside class="sidebar">
+```
+<!-- ================= SIDEBAR ================= -->
+<aside class="sidebar">
 
-        <div class="logo">
-            <h2>ATLD</h2>
-            <p>AN TOÀN LAO ĐỘNG</p>
+    <div class="logo">
+        <h2>ATLD</h2>
+        <p>AN TOÀN LAO ĐỘNG</p>
+    </div>
+
+    <nav>
+
+        <a href="/" class="menu-item active">
+            🏠
+            <span>Trang chủ</span>
+        </a>
+
+        <a href="/cong-nhan" class="menu-item">
+            👷
+            <span>Công nhân</span>
+        </a>
+
+        <a href="#" class="menu-item">
+            🦺
+            <span>Kiểm tra bảo hộ</span>
+        </a>
+
+        <a href="#" class="menu-item">
+            ⚠️
+            <span>Vi phạm</span>
+        </a>
+
+        <a href="#" class="menu-item">
+            🚧
+            <span>Nguy cơ</span>
+        </a>
+
+        <a href="#" class="menu-item">
+            📊
+            <span>Thống kê</span>
+        </a>
+
+        <a href="#" class="menu-item">
+            📄
+            <span>Báo cáo</span>
+        </a>
+
+    </nav>
+
+</aside>
+
+
+<!-- ================= MAIN CONTENT ================= -->
+<main class="main-content">
+
+
+    <!-- ================= HEADER ================= -->
+    <header class="top-header">
+
+        <div>
+            <h1>QUẢN LÝ AN TOÀN CÔNG TRƯỜNG</h1>
+
+            <p>
+                Hệ thống hỗ trợ cán bộ và kỹ thuật viên quản lý an toàn lao động
+            </p>
         </div>
 
-        <nav>
-            <a href="/" class="menu-item active">
-                🏠 <span>Trang chủ</span>
-            </a>
 
-            <a href="/cong-nhan" class="menu-item">
-                👷 <span>Công nhân</span>
-            </a>
+        <!-- VIBACON -->
+        <div class="vibacon-box">
+            <span class="vibacon-text">VIBACON</span>
+        </div>
 
-            <a href="#" class="menu-item">
-                🦺 <span>Kiểm tra bảo hộ</span>
-            </a>
-
-            <a href="#" class="menu-item">
-                ⚠️ <span>Vi phạm</span>
-            </a>
-
-            <a href="#" class="menu-item">
-                🚧 <span>Nguy cơ</span>
-            </a>
-
-            <a href="#" class="menu-item">
-                📊 <span>Thống kê</span>
-            </a>
-
-            <a href="#" class="menu-item">
-                📄 <span>Báo cáo</span>
-            </a>
-        </nav>
-
-    </aside>
+    </header>
 
 
-    <!-- NỘI DUNG CHÍNH -->
-    <main class="main-content">
 
-        <!-- HEADER -->
-        <header class="top-header">
+    <!-- ================= THỐNG KÊ ================= -->
+    <section class="dashboard-cards">
+
+
+        <!-- TỔNG CÔNG NHÂN -->
+        <div class="stat-card">
+
+            <div class="stat-icon">
+                👷
+            </div>
 
             <div>
-                <h1>QUẢN LÝ AN TOÀN CÔNG TRƯỜNG</h1>
+                <p>Tổng công nhân</p>
 
-                <p>
-                    Hệ thống hỗ trợ cán bộ và kỹ thuật viên
-                    quản lý an toàn lao động
-                </p>
+                <h2>
+                    {{ stats.tong_cong_nhan }}
+                </h2>
             </div>
 
-            <div class="user-info">
-                👤 Cán bộ công trường
+        </div>
+
+
+
+        <!-- ĐÃ KIỂM TRA -->
+        <div class="stat-card">
+
+            <div class="stat-icon">
+                🦺
             </div>
 
-        </header>
+            <div>
+                <p>Đã kiểm tra</p>
+
+                <h2>98</h2>
+            </div>
+
+        </div>
 
 
-        <!-- CÁC THẺ THỐNG KÊ -->
-        <section class="dashboard-cards">
 
-            <div class="stat-card">
+        <!-- VI PHẠM -->
+        <div class="stat-card">
 
-                <div class="stat-icon">
-                    👷
-                </div>
+            <div class="stat-icon">
+                ⚠️
+            </div>
 
-                <div>
-                    <p>Tổng công nhân</p>
-                    <h2>120</h2>
-                </div>
+            <div>
+                <p>Vi phạm</p>
+
+                <h2>12</h2>
+            </div>
+
+        </div>
+
+
+
+        <!-- NGUY CƠ CAO -->
+        <div class="stat-card">
+
+            <div class="stat-icon">
+                🚧
+            </div>
+
+            <div>
+                <p>Nguy cơ cao</p>
+
+                <h2>5</h2>
+            </div>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- ================= 2 CỘT ================= -->
+    <section class="dashboard-grid">
+
+
+        <!-- ================= HOẠT ĐỘNG GẦN ĐÂY ================= -->
+        <div class="panel">
+
+            <div class="panel-header">
+
+                <h2>Hoạt động gần đây</h2>
+
+                <button>
+                    Xem tất cả
+                </button>
 
             </div>
 
 
-            <div class="stat-card">
 
-                <div class="stat-icon">
+            <!-- HOẠT ĐỘNG 1 -->
+            <div class="activity-item">
+
+                <div class="activity-icon">
                     🦺
                 </div>
 
                 <div>
-                    <p>Đã kiểm tra</p>
-                    <h2>98</h2>
+
+                    <h3>
+                        Kiểm tra bảo hộ
+                    </h3>
+
+                    <p>
+                        Đã kiểm tra công nhân tại khu vực thi công tầng 3
+                    </p>
+
+                    <small>
+                        08:30 - Hôm nay
+                    </small>
+
                 </div>
 
             </div>
 
 
-            <div class="stat-card">
 
-                <div class="stat-icon">
+            <!-- HOẠT ĐỘNG 2 -->
+            <div class="activity-item">
+
+                <div class="activity-icon">
                     ⚠️
                 </div>
 
                 <div>
-                    <p>Vi phạm</p>
-                    <h2>12</h2>
+
+                    <h3>
+                        Ghi nhận vi phạm
+                    </h3>
+
+                    <p>
+                        Công nhân không sử dụng đầy đủ trang bị bảo hộ
+                    </p>
+
+                    <small>
+                        09:15 - Hôm nay
+                    </small>
+
                 </div>
 
             </div>
 
 
-            <div class="stat-card">
 
-                <div class="stat-icon">
+            <!-- HOẠT ĐỘNG 3 -->
+            <div class="activity-item">
+
+                <div class="activity-icon">
                     🚧
                 </div>
 
                 <div>
-                    <p>Nguy cơ cao</p>
-                    <h2>5</h2>
+
+                    <h3>
+                        Phát hiện nguy cơ
+                    </h3>
+
+                    <p>
+                        Khu vực sàn tầng 2 có vật liệu đặt không đúng vị trí
+                    </p>
+
+                    <small>
+                        10:20 - Hôm nay
+                    </small>
+
                 </div>
 
             </div>
 
-        </section>
+        </div>
 
 
-        <!-- KHU VỰC DASHBOARD -->
-        <section class="dashboard-grid">
 
-            <!-- HOẠT ĐỘNG GẦN ĐÂY -->
-            <div class="panel">
+        <!-- ================= TÌNH TRẠNG AN TOÀN ================= -->
+        <div class="panel">
 
-                <div class="panel-header">
+            <div class="panel-header">
 
-                    <h2>Hoạt động gần đây</h2>
+                <h2>
+                    Tình trạng an toàn
+                </h2>
 
-                    <button>
-                        Xem tất cả
-                    </button>
-
-                </div>
+            </div>
 
 
-                <div class="activity-item">
 
-                    <div class="activity-icon">
-                        🦺
-                    </div>
+            <!-- ĐIỂM AN TOÀN -->
+            <div class="safety-score">
 
-                    <div>
+                <div class="score-circle">
 
-                        <h3>Kiểm tra bảo hộ</h3>
+                    <strong>
+                        85
+                    </strong>
 
-                        <p>
-                            Đã kiểm tra công nhân tại khu vực
-                            thi công tầng 3
-                        </p>
-
-                        <small>
-                            08:30 - Hôm nay
-                        </small>
-
-                    </div>
+                    <span>
+                        /100
+                    </span>
 
                 </div>
 
 
-                <div class="activity-item">
+                <div>
 
-                    <div class="activity-icon">
-                        ⚠️
-                    </div>
+                    <h3>
+                        Mức an toàn: TỐT
+                    </h3>
 
-                    <div>
+                    <p>
+                        Điểm an toàn hiện tại của công trường
+                    </p>
 
-                        <h3>Ghi nhận vi phạm</h3>
+                </div>
 
-                        <p>
-                            Công nhân không sử dụng đầy đủ
-                            trang bị bảo hộ
-                        </p>
+            </div>
 
-                        <small>
-                            09:15 - Hôm nay
-                        </small>
 
-                    </div>
+
+            <!-- TRANG BỊ BẢO HỘ -->
+            <div class="progress-item">
+
+                <div class="progress-title">
+
+                    <span>
+                        Trang bị bảo hộ
+                    </span>
+
+                    <strong>
+                        90%
+                    </strong>
 
                 </div>
 
 
-                <div class="activity-item">
+                <div class="progress-bar">
 
-                    <div class="activity-icon">
-                        🚧
-                    </div>
-
-                    <div>
-
-                        <h3>Phát hiện nguy cơ</h3>
-
-                        <p>
-                            Khu vực sàn tầng 2 có vật liệu
-                            đặt không đúng vị trí
-                        </p>
-
-                        <small>
-                            10:20 - Hôm nay
-                        </small>
-
+                    <div
+                        class="progress"
+                        style="width: 90%;">
                     </div>
 
                 </div>
@@ -227,167 +414,109 @@
             </div>
 
 
-            <!-- TÌNH TRẠNG AN TOÀN -->
-            <div class="panel">
 
-                <div class="panel-header">
+            <!-- TUÂN THỦ -->
+            <div class="progress-item">
 
-                    <h2>Tình trạng an toàn</h2>
+                <div class="progress-title">
 
-                </div>
+                    <span>
+                        Tuân thủ quy định
+                    </span>
 
-
-                <div class="safety-score">
-
-                    <div class="score-circle">
-
-                        <strong>85</strong>
-
-                        <span>
-                            /100
-                        </span>
-
-                    </div>
-
-
-                    <div>
-
-                        <h3>
-                            Mức an toàn: TỐT
-                        </h3>
-
-                        <p>
-                            Điểm an toàn hiện tại của công trường
-                        </p>
-
-                    </div>
+                    <strong>
+                        85%
+                    </strong>
 
                 </div>
 
 
-                <!-- BẢO HỘ -->
-                <div class="progress-item">
+                <div class="progress-bar">
 
-                    <div class="progress-title">
-
-                        <span>
-                            Trang bị bảo hộ
-                        </span>
-
-                        <strong>
-                            90%
-                        </strong>
-
-                    </div>
-
-
-                    <div class="progress-bar">
-
-                        <div class="progress"
-                             style="width: 90%;">
-                        </div>
-
-                    </div>
-
-                </div>
-
-
-                <!-- TUÂN THỦ -->
-                <div class="progress-item">
-
-                    <div class="progress-title">
-
-                        <span>
-                            Tuân thủ quy định
-                        </span>
-
-                        <strong>
-                            85%
-                        </strong>
-
-                    </div>
-
-
-                    <div class="progress-bar">
-
-                        <div class="progress"
-                             style="width: 85%;">
-                        </div>
-
-                    </div>
-
-                </div>
-
-
-                <!-- NGUY CƠ -->
-                <div class="progress-item">
-
-                    <div class="progress-title">
-
-                        <span>
-                            Kiểm soát nguy cơ
-                        </span>
-
-                        <strong>
-                            80%
-                        </strong>
-
-                    </div>
-
-
-                    <div class="progress-bar">
-
-                        <div class="progress"
-                             style="width: 80%;">
-                        </div>
-
+                    <div
+                        class="progress"
+                        style="width: 85%;">
                     </div>
 
                 </div>
 
             </div>
 
-        </section>
 
 
-        <!-- CẢNH BÁO -->
-        <section class="warning-box">
+            <!-- KIỂM SOÁT NGUY CƠ -->
+            <div class="progress-item">
 
-            <div>
+                <div class="progress-title">
 
-                <h3>
-                    ⚠️ Cảnh báo an toàn
-                </h3>
+                    <span>
+                        Kiểm soát nguy cơ
+                    </span>
 
-                <p>
-                    Hiện có 5 nguy cơ mức cao cần được
-                    xử lý và kiểm tra lại.
-                </p>
+                    <strong>
+                        80%
+                    </strong>
+
+                </div>
+
+
+                <div class="progress-bar">
+
+                    <div
+                        class="progress"
+                        style="width: 80%;">
+                    </div>
+
+                </div>
 
             </div>
 
+        </div>
 
-            <button>
-                Xem chi tiết
-            </button>
-
-        </section>
+    </section>
 
 
-        <!-- FOOTER -->
-        <footer>
+
+    <!-- ================= CẢNH BÁO ================= -->
+    <section class="warning-box">
+
+        <div>
+
+            <h3>
+                ⚠️ Cảnh báo an toàn
+            </h3>
 
             <p>
-                Phần mềm quản lý an toàn công trường
+                Hiện có 5 nguy cơ mức cao cần được xử lý và kiểm tra lại.
             </p>
 
-            <p>
-                © 2026
-            </p>
+        </div>
 
-        </footer>
 
-    </main>
+        <button>
+            Xem chi tiết
+        </button>
+
+    </section>
+
+
+
+    <!-- ================= FOOTER ================= -->
+    <footer>
+
+        <p>
+            Phần mềm quản lý an toàn công trường
+        </p>
+
+        <p>
+            © 2026
+        </p>
+
+    </footer>
+
+
+</main>
+```
 
 </body>
 </html>
