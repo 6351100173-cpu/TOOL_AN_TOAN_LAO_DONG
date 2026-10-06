@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Biên bản vi phạm | ATLD</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+        body {
+            margin: 0;
+            padding: 25px;
+            background: #eeeeee;
+            font-family: "Times New Roman", serif;
+            color: #000000;
+        }
+        .document {
+            width: 210mm;
+            margin: 0 auto;
+            padding: 14mm 15mm 14mm 20mm;
+            background: #ffffff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
+        }
+        .document-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            width: 100%;
+            margin-bottom: 18px;
+        }
+        .company {
+            width: 36%;
+            text-align: center;
+        }
+        .company h3 {
+            margin: 0 0 4px;
+            font-size: 14px;
+            font-weight: bold;
+            text-transform: uppercase;
+            white-space: nowrap;
+        }
+        .company p {
+            margin: 0;
+            font-size: 13px;
+        }
+        .country {
+            width: 62%;
+            text-align: center;
+        }
+        .country h3 {
+            margin: 0 0 5px;
+            font-size: 14px;
+            font-weight: bold;
+            white-space: nowrap;
+        }
+        .country p {
+            margin: 0;
+            font-size: 14px;
+            font-weight: bold;
+            white-space: nowrap;
+        }
+        .line {
+            width: 145px;
+            margin: 5px auto 0;
+            border-top: 1px solid #000000;
+        }
+        .document-title {
+            margin-top: 22px;
+            text-align: center;
+        }
+        .document-title h1 {
+            margin: 0;
+            font-size: 20px;
+            text-transform: uppercase;
+        }
+        .document-title p {
+            margin: 5px 0 0;
+            font-size: 14px;
+        }
+        .intro {
+            margin-top: 18px;
+            font-size: 14px;
+            line-height: 1.45;
+            text-align: justify;
+        }
+        .section {
+            margin-top: 14px;
+        }
+        .section h2 {
+            margin: 0 0 7px;
+            font-size: 15px;
+            text-transform: uppercase;
+        }
+        .info-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+        .info-table td {
+            padding: 5px 8px;
+            border: 1px solid #000000;
+            vertical-align: top;
+            line-height: 1.35;
+        }
+        .info-label {
+            width: 185px;
+            font-weight: bold;
+        }
+        .violation-box {
+            min-height: 42px;
+            line-height: 1.4;
+        }
+        .money {
+            font-weight: bold;
+        }
+        .status {
+            font-weight: bold;
+        }
+        .note {
+            min-height: 35px;
+        }
+        .conclusion {
+            margin-top: 15px;
+            font-size: 14px;
+            line-height: 1.45;
+            text-align: justify;
+        }
+        .signatures {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-top: 20px;
+            text-align: center;
+            font-size: 14px;
+            page-break-inside: avoid;
+            break-inside: avoid;
+        }
+        .signature {
+            width: 32%;
+        }
+        .signature strong {
+            display: block;
+            margin-bottom: 3px;
+            white-space: nowrap;
+        }
+        .signature em {
+            display: block;
+            font-size: 13px;
+        }
+        .signature-space {
+            height: 55px;
+        }
+        .signature-name {
+            min-height: 20px;
+            font-weight: bold;
+        }
+        .toolbar {
+            width: 210mm;
+            margin: 0 auto 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .toolbar button,
+        .toolbar a {
+            padding: 10px 18px;
+            border: none;
+            border-radius: 6px;
+            font-family: Arial, sans-serif;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            text-decoration: none;
+        }
+        .back-button {
+            background: #ffffff;
+            color: #333333;
+            border: 1px solid #cccccc !important;
+        }
+        .print-button {
+            background: #111827;
+            color: #ffffff;
+        }
+        @media print {
+            @page {
+                size: A4 portrait;
+                margin: 0;
+            }
+            html,
+            body {
+                width: 210mm;
+                margin: 0;
+                padding: 0;
+                background: #ffffff;
+            }
+            .toolbar {
+                display: none;
+            }
+            .document {
+                width: 210mm;
+                margin: 0;
+                padding: 12mm 15mm 10mm 20mm;
+                box-shadow: none;
+            }
+            .document-top,
+            .section,
+            .signatures {
+                page-break-inside: avoid;
+                break-inside: avoid;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="toolbar">
+    <a class="back-button"
+       href="{{ url_for('vi_pham.danh_sach_vi_pham', ngay=violation.ngay_vi_pham) }}">
+        ← Quay lại
+    </a>
+    <button type="button"
+            class="print-button"
+            onclick="window.print()">
+        🖨 In / Lưu PDF
+    </button>
+</div>
+<div class="document">
+    <div class="document-top">
+        <div class="company">
+            <h3>CÔNG TY VIBACON</h3>
+            <p>Bộ phận An toàn lao động</p>
+            <div class="line"></div>
+        </div>
+        <div class="country">
+            <h3>CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM</h3>
+            <p>Độc lập - Tự do - Hạnh phúc</p>
+            <div class="line"></div>
+        </div>
+    </div>
+    <div class="document-title">
+        <h1>BIÊN BẢN VI PHẠM AN TOÀN LAO ĐỘNG</h1>
+        <p>Số: {{ so_bien_ban }}</p>
+    </div>
+    <div class="intro">
+        Hôm nay, ngày <strong>{{ ngay_hien_thi }}</strong>,
+        tiến hành lập biên bản đối với trường hợp vi phạm
+        quy định an toàn lao động với các nội dung sau:
+    </div>
+    <div class="section">
+        <h2>I. THÔNG TIN NGƯỜI VI PHẠM</h2>
+        <table class="info-table">
+            <tr>
+                <td class="info-label">Mã công nhân</td>
+                <td>{{ violation.ma_cn }}</td>
+            </tr>
+            <tr>
+                <td class="info-label">Họ và tên</td>
+                <td>{{ violation.ho_ten or '-' }}</td>
+            </tr>
+            <tr>
+                <td class="info-label">Bộ phận</td>
+                <td>{{ violation.bo_phan or '-' }}</td>
+            </tr>
+            <tr>
+                <td class="info-label">Công việc</td>
+                <td>{{ violation.cong_viec or '-' }}</td>
+            </tr>
+            <tr>
+                <td class="info-label">Số điện thoại</td>
+                <td>{{ violation.so_dien_thoai or '-' }}</td>
+            </tr>
+        </table>
+    </div>
+    <div class="section">
+        <h2>II. NỘI DUNG VI PHẠM</h2>
+        <table class="info-table">
+            <tr>
+                <td class="info-label">Ngày vi phạm</td>
+                <td>{{ ngay_hien_thi }}</td>
+            </tr>
+            <tr>
+                <td class="info-label">Thời gian</td>
+                <td>{{ violation.thoi_gian or '-' }}</td>
+            </tr>
+            <tr>
+                <td class="info-label">Mức độ</td>
+                <td>{{ violation.muc_do or '-' }}</td>
+            </tr>
+            <tr>
+                <td class="info-label">Nội dung vi phạm</td>
+                <td class="violation-box">
+                    {{ violation.noi_dung }}
+                </td>
+            </tr>
+        </table>
+    </div>
+    <div class="section">
+        <h2>III. HÌNH THỨC XỬ LÝ</h2>
+        <table class="info-table">
+            <tr>
+                <td class="info-label">Hình thức xử lý</td>
+                <td>
+                    {% if violation.hinh_thuc_xu_ly %}
+                        {{ violation.hinh_thuc_xu_ly }}
+                    {% else %}
+                        Chưa xác định
+                    {% endif %}
+                </td>
+            </tr>
+            {% if violation.so_tien_phat and violation.so_tien_phat > 0 %}
+            <tr>
+                <td class="info-label">Số tiền phạt</td>
+                <td class="money">
+                    {{ tien_phat_hien_thi }}
+                </td>
+            </tr>
+            {% endif %}
+            <tr>
+                <td class="info-label">Trạng thái</td>
+                <td class="status">
+                    {{ violation.trang_thai or 'Chưa xử lý' }}
+                </td>
+            </tr>
+            <tr>
+                <td class="info-label">Người lập biên bản</td>
+                <td>{{ violation.nguoi_lap or '-' }}</td>
+            </tr>
+            <tr>
+                <td class="info-label">Ghi chú / Nội dung xử lý</td>
+                <td class="note">
+                    {{ ghi_chu_hien_thi or '-' }}
+                </td>
+            </tr>
+        </table>
+    </div>
+    <div class="conclusion">
+        Biên bản được lập để ghi nhận sự việc và làm cơ sở
+        theo dõi, xử lý vi phạm an toàn lao động. Những người
+        có tên dưới đây xác nhận các thông tin được ghi trong biên bản.
+    </div>
+    <div class="signatures">
+        <div class="signature">
+            <strong>NGƯỜI VI PHẠM</strong>
+            <em>(Ký và ghi rõ họ tên)</em>
+            <div class="signature-space"></div>
+            <div class="signature-name">
+                {{ violation.ho_ten or '' }}
+            </div>
+        </div>
+        <div class="signature">
+            <strong>NGƯỜI LẬP BIÊN BẢN</strong>
+            <em>(Ký và ghi rõ họ tên)</em>
+            <div class="signature-space"></div>
+            <div class="signature-name">
+                {{ violation.nguoi_lap or '' }}
+            </div>
+        </div>
+        <div class="signature">
+            <strong>ĐẠI DIỆN CÔNG TRƯỜNG</strong>
+            <em>(Ký và ghi rõ họ tên)</em>
+            <div class="signature-space"></div>
+            <div class="signature-name">
+                &nbsp;
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,1181 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nguy cơ | ATLD</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        .risk-level {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 82px;
+            padding: 7px 12px;
+            border-radius: 999px;
+            font-size: 13px;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+        .risk-level-low {
+            background: #dcfce7;
+            color: #15803d;
+        }
+        .risk-level-medium {
+            background: #fef3c7;
+            color: #b45309;
+        }
+        .risk-level-high {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+        .risk-status-processing {
+            background: #fef3c7;
+            color: #a16207;
+        }
+        .risk-worker-name {
+            font-weight: 700;
+            color: #1e293b;
+        }
+        .risk-row-actions {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            white-space: nowrap;
+        }
+        .risk-detail-button {
+            border: none;
+            background: #e0f2fe;
+            color: #0369a1;
+            padding: 9px 12px;
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+        .risk-delete-form {
+            margin: 0;
+        }
+        .risk-delete-button {
+            border: none;
+            background: #fee2e2;
+            color: #dc2626;
+            padding: 9px 12px;
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+        .risk-delete-button:hover {
+            background: #fecaca;
+        }
+        .risk-report-button {
+            border: none;
+            background: #e0f2fe;
+            color: #0369a1;
+            padding: 10px 16px;
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .risk-report-button:hover {
+            background: #bae6fd;
+        }
+        .risk-readonly {
+            background: #f8fafc !important;
+            color: #475569;
+        }
+        .worker-info-box {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-top: 12px;
+        }
+        .worker-info-item {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 9px;
+            padding: 10px 12px;
+        }
+        .worker-info-item span {
+            display: block;
+            color: #64748b;
+            font-size: 12px;
+            margin-bottom: 4px;
+        }
+        .worker-info-item strong {
+            color: #1e293b;
+            font-size: 14px;
+        }
+        .worker-search-box {
+            position: relative;
+            width: 100%;
+        }
+        .worker-search-input {
+            width: 100%;
+            height: 48px;
+            padding: 0 16px 0 58px !important;
+            border: 1px solid #cbd5e1;
+            border-radius: 9px;
+            outline: none;
+            background: #ffffff;
+            color: #1e293b;
+            font-size: 15px;
+            box-sizing: border-box;
+        }
+        .worker-search-input::placeholder {
+            color: #64748b;
+            opacity: 1;
+        }
+        .worker-search-input:focus {
+            border-color: #38bdf8;
+            box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.12);
+        }
+        .worker-search-icon {
+            position: absolute;
+            left: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            line-height: 1;
+            pointer-events: none;
+            z-index: 5;
+        }
+        .worker-search-results {
+            display: none;
+            position: absolute;
+            left: 0;
+            right: 0;
+            top: calc(100% + 5px);
+            max-height: 210px;
+            overflow-y: auto;
+            background: #ffffff;
+            border: 1px solid #cbd5e1;
+            border-radius: 9px;
+            box-shadow: 0 10px 25px rgba(15, 23, 42, 0.15);
+            z-index: 9999;
+        }
+        .worker-search-results.show {
+            display: block;
+        }
+        .worker-result-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 14px;
+            border-bottom: 1px solid #eef2f7;
+            cursor: pointer;
+        }
+        .worker-result-item:hover {
+            background: #f1f5f9;
+        }
+        .worker-result-code {
+            min-width: 62px;
+            padding: 5px 8px;
+            border-radius: 7px;
+            background: #eaf2f7;
+            color: #24445a;
+            font-size: 12px;
+            font-weight: 700;
+            text-align: center;
+        }
+        .worker-result-name {
+            color: #1e293b;
+            font-weight: 700;
+            font-size: 14px;
+        }
+        .worker-result-meta {
+            margin-top: 3px;
+            color: #64748b;
+            font-size: 12px;
+        }
+        .worker-no-result {
+            padding: 14px;
+            color: #94a3b8;
+            text-align: center;
+        }
+        .selected-worker-box {
+            display: none;
+            margin-top: 10px;
+            padding: 10px 13px;
+            background: #ecfdf5;
+            border: 1px solid #a7f3d0;
+            border-radius: 9px;
+            color: #166534;
+            font-size: 14px;
+            font-weight: 700;
+        }
+        .selected-worker-box.show {
+            display: block;
+        }
+        @media (max-width: 900px) {
+            .worker-info-box {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+<aside class="sidebar">
+    <div class="logo">
+        <h2>ATLD</h2>
+        <p>AN TOÀN LAO ĐỘNG</p>
+    </div>
+    <nav>
+        <a href="/" class="menu-item">🏠 <span>Trang chủ</span></a>
+        <a href="/cong-nhan" class="menu-item">👷 <span>Công nhân</span></a>
+        <a href="{{ url_for('bao_ho.kiem_tra_bao_ho') }}" class="menu-item">🦺 <span>Kiểm tra bảo hộ</span></a>
+        <a href="{{ url_for('vi_pham.danh_sach_vi_pham') }}" class="menu-item">⚠️ <span>Vi phạm</span></a>
+        <a href="{{ url_for('nguy_co.danh_sach_nguy_co') }}" class="menu-item active">🚧 <span>Nguy cơ</span></a>
+        <a href="{{ url_for('thong_ke.thong_ke') }}" class="menu-item">📊 <span>Thống kê</span></a>
+        <a href="{{ url_for('bao_cao.bao_cao') }}" class="menu-item">📄 <span>Báo cáo</span></a>
+    </nav>
+</aside>
+<main class="main-content">
+    <header class="top-header">
+        <div>
+            <h1>QUẢN LÝ NGUY CƠ AN TOÀN LAO ĐỘNG</h1>
+            <p>Nhận diện, đánh giá và theo dõi xử lý nguy cơ tại công trường</p>
+        </div>
+        <div class="vibacon-box">
+            <span class="vibacon-text">VIBACON</span>
+        </div>
+    </header>
+    <section class="dashboard-cards">
+        <div class="stat-card">
+            <div class="stat-icon">⚠️</div>
+            <div>
+                <p>Tổng nguy cơ hôm nay</p>
+                <h2>{{ stats.tong_nguy_co }}</h2>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">🕒</div>
+            <div>
+                <p>Chưa xử lý</p>
+                <h2>{{ stats.chua_xu_ly }}</h2>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">🔧</div>
+            <div>
+                <p>Đang xử lý</p>
+                <h2>{{ stats.dang_xu_ly }}</h2>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">🚨</div>
+            <div>
+                <p>Nguy cơ cao</p>
+                <h2>{{ stats.nguy_co_cao }}</h2>
+            </div>
+        </div>
+    </section>
+    <section class="panel violation-panel">
+        <div class="panel-header violation-header">
+            <div>
+                <h2>DANH SÁCH NGUY CƠ</h2>
+                <p>Theo dõi nguy cơ an toàn liên quan đến công nhân tại công trường</p>
+            </div>
+            <form method="GET"
+                  action="{{ url_for('nguy_co.danh_sach_nguy_co') }}"
+                  class="date-form">
+                <input type="date"
+                       name="ngay"
+                       value="{{ ngay_chon }}"
+                       onchange="this.form.submit()">
+            </form>
+        </div>
+        <div class="violation-actions">
+            <button type="button"
+                    class="add-violation-button"
+                    onclick="openRiskModal()">
+                + Ghi nhận nguy cơ
+            </button>
+        </div>
+        <div class="worker-filter violation-filter">
+            <div class="worker-search-main">
+                <span class="search-icon">🔎</span>
+                <input type="text"
+                       id="riskSearch"
+                       placeholder="Tìm theo mã CN, họ tên, bộ phận, khu vực, loại nguy cơ..."
+                       oninput="filterRisks()">
+            </div>
+            <select id="riskStatusFilter"
+                    onchange="filterRisks()">
+                <option value="all">Tất cả trạng thái</option>
+                <option value="Chưa xử lý">Chưa xử lý</option>
+                <option value="Đang xử lý">Đang xử lý</option>
+                <option value="Đã xử lý">Đã xử lý</option>
+            </select>
+        </div>
+        <div class="daily-table-wrapper">
+            <table class="daily-check-table violation-table">
+                <thead>
+                    <tr>
+                        <th>STT</th>
+                        <th>MÃ CN</th>
+                        <th>HỌ VÀ TÊN</th>
+                        <th>BỘ PHẬN</th>
+                        <th>KHU VỰC</th>
+                        <th>LOẠI NGUY CƠ</th>
+                        <th>MỨC ĐỘ</th>
+                        <th>TRẠNG THÁI</th>
+                        <th>THAO TÁC</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in danh_sach %}
+                    <tr class="risk-row"
+                        data-search="{{ item.ma_cn or '' }} {{ item.ho_ten or '' }} {{ item.bo_phan or '' }} {{ item.khu_vuc }} {{ item.loai_nguy_co }} {{ item.mo_ta }}"
+                        data-status="{{ item.trang_thai }}">
+                        <td>{{ loop.index }}</td>
+                        <td>
+                            {% if item.ma_cn %}
+                            <span class="worker-code">{{ item.ma_cn }}</span>
+                            {% else %}
+                            -
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if item.ho_ten %}
+                            <span class="risk-worker-name">{{ item.ho_ten }}</span>
+                            {% else %}
+                            Chưa liên kết
+                            {% endif %}
+                        </td>
+                        <td>{{ item.bo_phan or '-' }}</td>
+                        <td>{{ item.khu_vuc }}</td>
+                        <td>{{ item.loai_nguy_co }}</td>
+                        <td>
+                            {% if item.muc_do == "Cao" %}
+                            <span class="risk-level risk-level-high">Cao</span>
+                            {% elif item.muc_do == "Thấp" %}
+                            <span class="risk-level risk-level-low">Thấp</span>
+                            {% else %}
+                            <span class="risk-level risk-level-medium">Trung bình</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if item.trang_thai == "Đã xử lý" %}
+                            <span class="status-badge status-pass">✓ Đã xử lý</span>
+                            {% elif item.trang_thai == "Đang xử lý" %}
+                            <span class="status-badge risk-status-processing">🔧 Đang xử lý</span>
+                            {% else %}
+                            <span class="status-badge status-pending">Chưa xử lý</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div class="risk-row-actions">
+                                <button type="button"
+                                        class="risk-detail-button"
+                                        onclick='openRiskDetail(
+                                            {{ item.id|tojson }},
+                                            {{ item.ma_nguy_co|tojson }},
+                                            {{ (item.ma_cn or "")|tojson }},
+                                            {{ (item.ho_ten or "")|tojson }},
+                                            {{ (item.bo_phan or "")|tojson }},
+                                            {{ (item.cong_viec or "")|tojson }},
+                                            {{ item.khu_vuc|tojson }},
+                                            {{ item.loai_nguy_co|tojson }},
+                                            {{ item.mo_ta|tojson }},
+                                            {{ item.muc_do|tojson }},
+                                            {{ item.ngay_phat_hien|tojson }},
+                                            {{ (item.thoi_gian or "")|tojson }},
+                                            {{ (item.nguoi_phat_hien or "")|tojson }},
+                                            {{ (item.bien_phap_xu_ly or "")|tojson }},
+                                            {{ (item.nguoi_phu_trach or "")|tojson }},
+                                            {{ (item.han_xu_ly or "")|tojson }},
+                                            {{ item.trang_thai|tojson }},
+                                            {{ (item.ghi_chu or "")|tojson }},
+                                            {{ (item.ghi_chu_xu_ly or "")|tojson }}
+                                        )'>
+                                    👁 Chi tiết
+                                </button>
+                                <form action="{{ url_for('nguy_co.xoa_nguy_co', nguy_co_id=item.id) }}"
+                                      method="POST"
+                                      class="risk-delete-form"
+                                      onsubmit="return confirm('Bạn có chắc muốn xóa nguy cơ này không?');">
+                                    <input type="hidden"
+                                           name="ngay_chon"
+                                           value="{{ ngay_chon }}">
+                                    <button type="submit"
+                                            class="risk-delete-button">
+                                        🗑 Xóa
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="9" class="empty-table">
+                            Chưa có nguy cơ nào được ghi nhận trong ngày này.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+</main>
+<div id="riskModal" class="inspection-modal">
+    <div class="inspection-modal-box">
+        <div class="modal-header">
+            <div>
+                <h2>GHI NHẬN NGUY CƠ</h2>
+                <p>Tìm công nhân và nhập thông tin nguy cơ an toàn lao động</p>
+            </div>
+            <button type="button"
+                    class="modal-close"
+                    onclick="closeRiskModal()">
+                ×
+            </button>
+        </div>
+        <form action="{{ url_for('nguy_co.them_nguy_co') }}"
+              method="POST"
+              onsubmit="return validateRiskWorker()">
+            <input type="hidden"
+                   name="ma_cn"
+                   id="riskWorkerCode">
+            <div class="modal-form-group">
+                <label>Công nhân liên quan</label>
+                <div class="worker-search-box">
+                    <span class="worker-search-icon">🔎</span>
+                    <input type="text"
+                           id="riskWorkerSearch"
+                           class="worker-search-input"
+                           placeholder="Nhập mã CN hoặc họ tên để tìm..."
+                           autocomplete="off"
+                           oninput="searchRiskWorkers()">
+                    <div id="riskWorkerResults"
+                         class="worker-search-results"></div>
+                </div>
+                <div id="selectedRiskWorker"
+                     class="selected-worker-box">
+                    ✓ Đã chọn:
+                    <span id="selectedRiskWorkerText"></span>
+                </div>
+                <div class="worker-info-box">
+                    <div class="worker-info-item">
+                        <span>Mã CN</span>
+                        <strong id="riskWorkerCodeText">-</strong>
+                    </div>
+                    <div class="worker-info-item">
+                        <span>Họ và tên</span>
+                        <strong id="riskWorkerName">Chưa chọn</strong>
+                    </div>
+                    <div class="worker-info-item">
+                        <span>Bộ phận</span>
+                        <strong id="riskWorkerDepartment">-</strong>
+                    </div>
+                    <div class="worker-info-item">
+                        <span>Công việc</span>
+                        <strong id="riskWorkerJob">-</strong>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-ppe-grid">
+                <div class="modal-ppe-item">
+                    <label>Ngày phát hiện</label>
+                    <input type="date"
+                           name="ngay_phat_hien"
+                           value="{{ ngay_chon }}"
+                           required>
+                </div>
+                <div class="modal-ppe-item">
+                    <label>Thời gian</label>
+                    <input type="time"
+                           name="thoi_gian"
+                           id="riskTime">
+                </div>
+            </div>
+            <div class="modal-form-group">
+                <label>Khu vực phát hiện</label>
+                <input type="text"
+                       name="khu_vuc"
+                       placeholder="Ví dụ: Tầng 5, kho vật tư, hố đào..."
+                       required>
+            </div>
+            <div class="modal-ppe-grid">
+                <div class="modal-ppe-item">
+                    <label>Loại nguy cơ</label>
+                    <select name="loai_nguy_co" required>
+                        <option value="">-- Chọn loại nguy cơ --</option>
+                        <option value="Ngã cao">Ngã cao</option>
+                        <option value="Điện">Điện</option>
+                        <option value="Vật rơi">Vật rơi</option>
+                        <option value="Máy móc thiết bị">Máy móc thiết bị</option>
+                        <option value="Giàn giáo">Giàn giáo</option>
+                        <option value="Hố đào">Hố đào</option>
+                        <option value="Cháy nổ">Cháy nổ</option>
+                        <option value="Trượt/ngã">Trượt/ngã</option>
+                        <option value="Vật liệu">Vật liệu</option>
+                        <option value="Khác">Khác</option>
+                    </select>
+                </div>
+                <div class="modal-ppe-item">
+                    <label>Mức độ</label>
+                    <select name="muc_do" required>
+                        <option value="Thấp">Thấp</option>
+                        <option value="Trung bình" selected>Trung bình</option>
+                        <option value="Cao">Cao</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-form-group">
+                <label>Mô tả nguy cơ</label>
+                <textarea name="mo_ta"
+                          placeholder="Mô tả cụ thể nguy cơ mất an toàn..."
+                          required></textarea>
+            </div>
+            <div class="modal-form-group">
+                <label>Người phát hiện</label>
+                <input type="text"
+                       name="nguoi_phat_hien"
+                       placeholder="Nhập tên người phát hiện">
+            </div>
+            <div class="modal-form-group">
+                <label>Ghi chú</label>
+                <textarea name="ghi_chu"
+                          placeholder="Nhập ghi chú nếu có..."></textarea>
+            </div>
+            <div class="modal-actions">
+                <button type="button"
+                        class="modal-cancel-button"
+                        onclick="closeRiskModal()">
+                    Hủy
+                </button>
+                <button type="submit"
+                        class="modal-save-button">
+                    ✓ Lưu nguy cơ
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+<div id="detailRiskModal" class="inspection-modal">
+    <div class="inspection-modal-box">
+        <div class="modal-header">
+            <div>
+                <h2>CHI TIẾT NGUY CƠ</h2>
+                <p id="detailRiskTitle">Thông tin và biện pháp xử lý nguy cơ</p>
+            </div>
+            <button type="button"
+                    class="modal-close"
+                    onclick="closeRiskDetail()">
+                ×
+            </button>
+        </div>
+        <form id="detailRiskForm" method="POST">
+            <input type="hidden"
+                   name="ngay_chon"
+                   value="{{ ngay_chon }}">
+            <input type="hidden"
+                   name="ma_cn"
+                   id="detailWorkerCode">
+            <div class="modal-form-group">
+                <label>Mã nguy cơ</label>
+                <input type="text"
+                       id="detailMaNguyCo"
+                       class="risk-readonly"
+                       readonly>
+            </div>
+            <div class="modal-form-group">
+                <label>Công nhân liên quan</label>
+                <div class="worker-search-box">
+                    <span class="worker-search-icon">🔎</span>
+                    <input type="text"
+                           id="detailWorkerSearch"
+                           class="worker-search-input"
+                           placeholder="Nhập mã CN hoặc họ tên để tìm..."
+                           autocomplete="off"
+                           oninput="searchDetailWorkers()">
+                    <div id="detailWorkerResults"
+                         class="worker-search-results"></div>
+                </div>
+                <div class="worker-info-box">
+                    <div class="worker-info-item">
+                        <span>Mã CN</span>
+                        <strong id="detailWorkerCodeText">-</strong>
+                    </div>
+                    <div class="worker-info-item">
+                        <span>Họ và tên</span>
+                        <strong id="detailWorkerName">-</strong>
+                    </div>
+                    <div class="worker-info-item">
+                        <span>Bộ phận</span>
+                        <strong id="detailWorkerDepartment">-</strong>
+                    </div>
+                    <div class="worker-info-item">
+                        <span>Công việc</span>
+                        <strong id="detailWorkerJob">-</strong>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-ppe-grid">
+                <div class="modal-ppe-item">
+                    <label>Khu vực</label>
+                    <input type="text"
+                           id="detailKhuVuc"
+                           class="risk-readonly"
+                           readonly>
+                </div>
+                <div class="modal-ppe-item">
+                    <label>Loại nguy cơ</label>
+                    <input type="text"
+                           id="detailLoaiNguyCo"
+                           class="risk-readonly"
+                           readonly>
+                </div>
+            </div>
+            <div class="modal-ppe-grid">
+                <div class="modal-ppe-item">
+                    <label>Ngày phát hiện</label>
+                    <input type="date"
+                           id="detailNgayPhatHien"
+                           class="risk-readonly"
+                           readonly>
+                </div>
+                <div class="modal-ppe-item">
+                    <label>Thời gian</label>
+                    <input type="text"
+                           id="detailThoiGian"
+                           class="risk-readonly"
+                           readonly>
+                </div>
+            </div>
+            <div class="modal-form-group">
+                <label>Người phát hiện</label>
+                <input type="text"
+                       id="detailNguoiPhatHien"
+                       class="risk-readonly"
+                       readonly>
+            </div>
+            <div class="modal-form-group">
+                <label>Mô tả nguy cơ</label>
+                <textarea id="detailMoTa"
+                          class="risk-readonly"
+                          readonly></textarea>
+            </div>
+            <div class="modal-form-group">
+                <label>Ghi chú khi phát hiện</label>
+                <textarea id="detailGhiChu"
+                          class="risk-readonly"
+                          readonly></textarea>
+            </div>
+            <div class="modal-ppe-grid">
+                <div class="modal-ppe-item">
+                    <label>Mức độ</label>
+                    <select name="muc_do"
+                            id="detailMucDo"
+                            required>
+                        <option value="Thấp">Thấp</option>
+                        <option value="Trung bình">Trung bình</option>
+                        <option value="Cao">Cao</option>
+                    </select>
+                </div>
+                <div class="modal-ppe-item">
+                    <label>Trạng thái xử lý</label>
+                    <select name="trang_thai"
+                            id="detailTrangThai"
+                            required>
+                        <option value="Chưa xử lý">Chưa xử lý</option>
+                        <option value="Đang xử lý">Đang xử lý</option>
+                        <option value="Đã xử lý">Đã xử lý</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-form-group">
+                <label>Biện pháp xử lý</label>
+                <textarea name="bien_phap_xu_ly"
+                          id="detailBienPhap"
+                          placeholder="Nhập biện pháp khắc phục nguy cơ..."></textarea>
+            </div>
+            <div class="modal-ppe-grid">
+                <div class="modal-ppe-item">
+                    <label>Người phụ trách xử lý</label>
+                    <input type="text"
+                           name="nguoi_phu_trach"
+                           id="detailNguoiPhuTrach"
+                           placeholder="Nhập người phụ trách">
+                </div>
+                <div class="modal-ppe-item">
+                    <label>Hạn xử lý</label>
+                    <input type="date"
+                           name="han_xu_ly"
+                           id="detailHanXuLy">
+                </div>
+            </div>
+            <div class="modal-form-group">
+                <label>Ghi chú xử lý</label>
+                <textarea name="ghi_chu_xu_ly"
+                          id="detailGhiChuXuLy"
+                          placeholder="Nhập ghi chú trong quá trình xử lý..."></textarea>
+            </div>
+            <div class="modal-actions">
+                <button type="button"
+                        class="modal-cancel-button"
+                        onclick="closeRiskDetail()">
+                    Đóng
+                </button>
+                <a id="detailRiskReportButton"
+                   href="#"
+                   target="_blank"
+                   class="risk-report-button">
+                    📄 Biên bản nguy cơ
+                </a>
+                <button type="submit"
+                        class="modal-save-button">
+                    ✓ Lưu xử lý
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+<script>
+const workers = [
+    {% for cn in danh_sach_cong_nhan %}
+    {
+        ma_cn: {{ cn.ma_cn|tojson }},
+        ho_ten: {{ cn.ho_ten|tojson }},
+        bo_phan: {{ (cn.bo_phan or "")|tojson }},
+        cong_viec: {{ (cn.cong_viec or "")|tojson }}
+    }{% if not loop.last %},{% endif %}
+    {% endfor %}
+];
+function normalizeText(value) {
+    return (value || "")
+        .toString()
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .trim();
+}
+function filterWorkerData(keyword) {
+    const key = normalizeText(keyword);
+    if (key.length < 1) {
+        return [];
+    }
+    return workers.filter(function (worker) {
+        const content = normalizeText(
+            worker.ma_cn + " " +
+            worker.ho_ten + " " +
+            worker.bo_phan + " " +
+            worker.cong_viec
+        );
+        return content.includes(key);
+    }).slice(0, 8);
+}
+function createWorkerResults(container, data, type) {
+    container.innerHTML = "";
+    if (data.length === 0) {
+        container.classList.remove("show");
+        return;
+    }
+    data.forEach(function (worker) {
+        const item = document.createElement("div");
+        item.className = "worker-result-item";
+        item.onclick = function () {
+            if (type === "risk") {
+                selectRiskWorker(worker);
+            } else {
+                selectDetailWorker(worker);
+            }
+        };
+        const code = document.createElement("div");
+        code.className = "worker-result-code";
+        code.textContent = worker.ma_cn;
+        const info = document.createElement("div");
+        const name = document.createElement("div");
+        name.className = "worker-result-name";
+        name.textContent = worker.ho_ten;
+        const meta = document.createElement("div");
+        meta.className = "worker-result-meta";
+        meta.textContent =
+            (worker.bo_phan || "-") +
+            " • " +
+            (worker.cong_viec || "-");
+        info.appendChild(name);
+        info.appendChild(meta);
+        item.appendChild(code);
+        item.appendChild(info);
+        container.appendChild(item);
+    });
+    container.classList.add("show");
+}
+function searchRiskWorkers() {
+    const input = document.getElementById(
+        "riskWorkerSearch"
+    );
+    const results = document.getElementById(
+        "riskWorkerResults"
+    );
+    const keyword = input.value.trim();
+    if (!keyword) {
+        results.innerHTML = "";
+        results.classList.remove("show");
+        return;
+    }
+    createWorkerResults(
+        results,
+        filterWorkerData(keyword),
+        "risk"
+    );
+}
+function selectRiskWorker(worker) {
+    document.getElementById(
+        "riskWorkerCode"
+    ).value = worker.ma_cn;
+    document.getElementById(
+        "riskWorkerSearch"
+    ).value =
+        worker.ma_cn + " - " + worker.ho_ten;
+    document.getElementById(
+        "riskWorkerCodeText"
+    ).textContent = worker.ma_cn;
+    document.getElementById(
+        "riskWorkerName"
+    ).textContent = worker.ho_ten;
+    document.getElementById(
+        "riskWorkerDepartment"
+    ).textContent = worker.bo_phan || "-";
+    document.getElementById(
+        "riskWorkerJob"
+    ).textContent = worker.cong_viec || "-";
+    document.getElementById(
+        "selectedRiskWorkerText"
+    ).textContent =
+        worker.ma_cn + " - " + worker.ho_ten;
+    document.getElementById(
+        "selectedRiskWorker"
+    ).classList.add("show");
+    document.getElementById(
+        "riskWorkerResults"
+    ).classList.remove("show");
+}
+function validateRiskWorker() {
+    if (!document.getElementById(
+        "riskWorkerCode"
+    ).value) {
+        alert(
+            "Vui lòng nhập mã hoặc tên và chọn công nhân."
+        );
+        document.getElementById(
+            "riskWorkerSearch"
+        ).focus();
+        return false;
+    }
+    return true;
+}
+function searchDetailWorkers() {
+    const input = document.getElementById(
+        "detailWorkerSearch"
+    );
+    const results = document.getElementById(
+        "detailWorkerResults"
+    );
+    const keyword = input.value.trim();
+    if (!keyword) {
+        results.innerHTML = "";
+        results.classList.remove("show");
+        return;
+    }
+    createWorkerResults(
+        results,
+        filterWorkerData(keyword),
+        "detail"
+    );
+}
+function selectDetailWorker(worker) {
+    document.getElementById(
+        "detailWorkerCode"
+    ).value = worker.ma_cn;
+    document.getElementById(
+        "detailWorkerSearch"
+    ).value =
+        worker.ma_cn + " - " + worker.ho_ten;
+    document.getElementById(
+        "detailWorkerCodeText"
+    ).textContent = worker.ma_cn;
+    document.getElementById(
+        "detailWorkerName"
+    ).textContent = worker.ho_ten;
+    document.getElementById(
+        "detailWorkerDepartment"
+    ).textContent = worker.bo_phan || "-";
+    document.getElementById(
+        "detailWorkerJob"
+    ).textContent = worker.cong_viec || "-";
+    document.getElementById(
+        "detailWorkerResults"
+    ).classList.remove("show");
+}
+function filterRisks() {
+    const keyword = normalizeText(
+        document.getElementById(
+            "riskSearch"
+        ).value
+    );
+    const status = document.getElementById(
+        "riskStatusFilter"
+    ).value;
+    document.querySelectorAll(
+        ".risk-row"
+    ).forEach(function (row) {
+        const text = normalizeText(
+            row.dataset.search || ""
+        );
+        const rowStatus =
+            row.dataset.status || "";
+        const matchKeyword =
+            text.includes(keyword);
+        const matchStatus =
+            status === "all" ||
+            rowStatus === status;
+        row.style.display =
+            matchKeyword && matchStatus
+                ? ""
+                : "none";
+    });
+}
+function resetRiskWorker() {
+    document.getElementById(
+        "riskWorkerCode"
+    ).value = "";
+    document.getElementById(
+        "riskWorkerSearch"
+    ).value = "";
+    document.getElementById(
+        "riskWorkerCodeText"
+    ).textContent = "-";
+    document.getElementById(
+        "riskWorkerName"
+    ).textContent = "Chưa chọn";
+    document.getElementById(
+        "riskWorkerDepartment"
+    ).textContent = "-";
+    document.getElementById(
+        "riskWorkerJob"
+    ).textContent = "-";
+    document.getElementById(
+        "selectedRiskWorker"
+    ).classList.remove("show");
+    document.getElementById(
+        "riskWorkerResults"
+    ).innerHTML = "";
+    document.getElementById(
+        "riskWorkerResults"
+    ).classList.remove("show");
+}
+function openRiskModal() {
+    resetRiskWorker();
+    document.getElementById(
+        "riskModal"
+    ).classList.add("show");
+    document.body.classList.add(
+        "modal-open"
+    );
+    const now = new Date();
+    document.getElementById(
+        "riskTime"
+    ).value =
+        String(now.getHours()).padStart(
+            2,
+            "0"
+        ) +
+        ":" +
+        String(now.getMinutes()).padStart(
+            2,
+            "0"
+        );
+}
+function closeRiskModal() {
+    document.getElementById(
+        "riskModal"
+    ).classList.remove("show");
+    document.body.classList.remove(
+        "modal-open"
+    );
+}
+function openRiskDetail(
+    id,
+    maNguyCo,
+    maCn,
+    hoTen,
+    boPhan,
+    congViec,
+    khuVuc,
+    loaiNguyCo,
+    moTa,
+    mucDo,
+    ngayPhatHien,
+    thoiGian,
+    nguoiPhatHien,
+    bienPhapXuLy,
+    nguoiPhuTrach,
+    hanXuLy,
+    trangThai,
+    ghiChu,
+    ghiChuXuLy
+) {
+    document.getElementById(
+        "detailRiskForm"
+    ).action =
+        "/xu-ly-nguy-co/" + id;
+    document.getElementById(
+        "detailRiskReportButton"
+    ).href =
+        "/bien-ban-nguy-co/" + id;
+    document.getElementById(
+        "detailRiskTitle"
+    ).textContent =
+        maNguyCo +
+        (hoTen ? " - " + hoTen : "");
+    document.getElementById(
+        "detailMaNguyCo"
+    ).value = maNguyCo || "";
+    document.getElementById(
+        "detailWorkerCode"
+    ).value = maCn || "";
+    document.getElementById(
+        "detailWorkerCodeText"
+    ).textContent = maCn || "-";
+    document.getElementById(
+        "detailWorkerName"
+    ).textContent = hoTen || "-";
+    document.getElementById(
+        "detailWorkerDepartment"
+    ).textContent = boPhan || "-";
+    document.getElementById(
+        "detailWorkerJob"
+    ).textContent = congViec || "-";
+    document.getElementById(
+        "detailWorkerSearch"
+    ).value =
+        maCn && hoTen
+            ? maCn + " - " + hoTen
+            : "";
+    document.getElementById(
+        "detailKhuVuc"
+    ).value = khuVuc || "";
+    document.getElementById(
+        "detailLoaiNguyCo"
+    ).value = loaiNguyCo || "";
+    document.getElementById(
+        "detailMoTa"
+    ).value = moTa || "";
+    document.getElementById(
+        "detailMucDo"
+    ).value = mucDo || "Trung bình";
+    document.getElementById(
+        "detailNgayPhatHien"
+    ).value = ngayPhatHien || "";
+    document.getElementById(
+        "detailThoiGian"
+    ).value = thoiGian || "";
+    document.getElementById(
+        "detailNguoiPhatHien"
+    ).value = nguoiPhatHien || "";
+    document.getElementById(
+        "detailBienPhap"
+    ).value = bienPhapXuLy || "";
+    document.getElementById(
+        "detailNguoiPhuTrach"
+    ).value = nguoiPhuTrach || "";
+    document.getElementById(
+        "detailHanXuLy"
+    ).value = hanXuLy || "";
+    document.getElementById(
+        "detailTrangThai"
+    ).value =
+        trangThai || "Chưa xử lý";
+    document.getElementById(
+        "detailGhiChu"
+    ).value = ghiChu || "";
+    document.getElementById(
+        "detailGhiChuXuLy"
+    ).value = ghiChuXuLy || "";
+    document.getElementById(
+        "detailWorkerResults"
+    ).classList.remove("show");
+    document.getElementById(
+        "detailRiskModal"
+    ).classList.add("show");
+    document.body.classList.add(
+        "modal-open"
+    );
+}
+function closeRiskDetail() {
+    document.getElementById(
+        "detailRiskModal"
+    ).classList.remove("show");
+    document.body.classList.remove(
+        "modal-open"
+    );
+}
+document.addEventListener(
+    "click",
+    function (event) {
+        const box1 =
+            document.getElementById(
+                "riskWorkerResults"
+            );
+        const input1 =
+            document.getElementById(
+                "riskWorkerSearch"
+            );
+        if (
+            event.target !== input1 &&
+            !box1.contains(event.target)
+        ) {
+            box1.classList.remove("show");
+        }
+        const box2 =
+            document.getElementById(
+                "detailWorkerResults"
+            );
+        const input2 =
+            document.getElementById(
+                "detailWorkerSearch"
+            );
+        if (
+            event.target !== input2 &&
+            !box2.contains(event.target)
+        ) {
+            box2.classList.remove("show");
+        }
+    });
+document.getElementById(
+    "riskModal"
+).addEventListener(
+    "click",
+    function (event) {
+        if (event.target === this) {
+            closeRiskModal();
+        }});
+document.getElementById(
+    "detailRiskModal"
+).addEventListener(
+    "click",
+    function (event) {
+        if (event.target === this) {
+            closeRiskDetail();
+        }});
+document.addEventListener(
+    "keydown",
+    function (event) {
+        if (event.key === "Escape") {
+            closeRiskModal();
+            closeRiskDetail();
+        }});
+</script>
+</body>
+</html>

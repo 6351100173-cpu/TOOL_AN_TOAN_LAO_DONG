@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kiểm tra bảo hộ | ATLD</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<!-- =========================================================
+     1. SIDEBAR
+     ========================================================= -->
+<aside class="sidebar">
+    <div class="logo">
+        <h2>ATLD</h2>
+        <p>AN TOÀN LAO ĐỘNG</p>
+    </div>
+    <nav>
+        <a href="/" class="menu-item">
+            🏠
+            <span>Trang chủ</span>
+        </a>
+        <a href="/cong-nhan" class="menu-item">
+            👷
+            <span>Công nhân</span>
+        </a>
+        <a href="{{ url_for('bao_ho.kiem_tra_bao_ho') }}" class="menu-item active">
+            🦺
+            <span>Kiểm tra bảo hộ</span>
+        </a>
+        <a href="{{ url_for('vi_pham.danh_sach_vi_pham') }}" class="menu-item">
+            ⚠️
+            <span>Vi phạm</span>
+        </a>
+        <a href="{{ url_for('nguy_co.danh_sach_nguy_co') }}" class="menu-item">
+            🚧
+            <span>Nguy cơ</span>
+        </a>
+        <a href="{{ url_for('thong_ke.thong_ke') }}" class="menu-item">
+            📊
+            <span>Thống kê</span>
+        </a>
+        <a href="{{ url_for('bao_cao.bao_cao') }}" class="menu-item">
+            📄
+            <span>Báo cáo</span>
+        </a>
+    </nav>
+</aside>
+<!-- =========================================================
+     2. NỘI DUNG CHÍNH
+     ========================================================= -->
+<main class="main-content">
+    <!-- =====================================================
+         HEADER
+         ===================================================== -->
+    <header class="top-header">
+        <div>
+            <h1>KIỂM TRA BẢO HỘ LAO ĐỘNG</h1>
+            <p>
+                Theo dõi tình trạng trang bị bảo hộ
+                của công nhân theo từng ngày
+            </p>
+        </div>
+        <div class="vibacon-box">
+            <span class="vibacon-text">VIBACON</span>
+        </div>
+    </header>
+    <!-- =====================================================
+         3. THỐNG KÊ TRONG NGÀY
+         ===================================================== -->
+    <section class="dashboard-cards">
+        <!-- Tổng công nhân -->
+        <div class="stat-card">
+            <div class="stat-icon">👷</div>
+            <div>
+                <p>Công nhân hôm nay</p>
+                <h2>{{ stats.tong_cong_nhan }}</h2>
+            </div></div>
+        <!-- Đã kiểm tra -->
+        <div class="stat-card">
+            <div class="stat-icon">🦺</div>
+            <div>
+                <p>Đã kiểm tra</p>
+                <h2>
+                    {{ stats.da_kiem_tra }}
+                    /
+                    {{ stats.tong_cong_nhan }}
+                </h2>
+            </div></div>
+        <!-- Đạt -->
+        <div class="stat-card">
+            <div class="stat-icon">✅</div>
+            <div>
+                <p>Đạt</p>
+                <h2>{{ stats.so_dat }}</h2>
+            </div></div>
+        <!-- Không đạt -->
+        <div class="stat-card">
+            <div class="stat-icon">⚠️</div>
+            <div>
+                <p>Không đạt</p>
+                <h2>{{ stats.so_khong_dat }}</h2>
+            </div></div>
+    </section>
+    <!-- =====================================================
+         4. KHU VỰC KIỂM TRA HÔM NAY
+         ===================================================== -->
+    <section class="panel daily-check-panel">
+        <div class="panel-header">
+            <div>
+                <h2>KIỂM TRA TRONG NGÀY</h2>
+                <p>Chọn ngày để xem hoặc thực hiện kiểm tra</p>
+            </div>
+            <form method="GET"
+                  action="{{ url_for('bao_ho.kiem_tra_bao_ho') }}"
+                  class="date-form">
+                <input type="date"
+                       name="ngay"
+                       value="{{ ngay_chon }}"
+                       onchange="this.form.submit()">
+            </form>
+        </div>
+        <!-- =================================================
+             THANH TIẾN ĐỘ
+             ================================================= -->
+        <div class="inspection-progress">
+            <div class="progress-info">
+                <span>Tiến độ kiểm tra</span>
+                <strong>
+                    {{ stats.da_kiem_tra }}
+                    /
+                    {{ stats.tong_cong_nhan }}
+                </strong>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill"
+                     style="width: {{ stats.ty_le_hoan_thanh }}%;">
+                </div>
+            </div>
+            <div class="progress-footer">
+                <span>
+                    {{ stats.ty_le_hoan_thanh }}%
+                    hoàn thành
+                </span>
+                <span>
+                    Còn
+                    {{ stats.chua_kiem_tra }}
+                    công nhân chưa kiểm tra
+                </span>
+            </div>
+        </div>
+        <!-- =================================================
+             NÚT ĐÁNH DẤU TẤT CẢ ĐẠT
+             ================================================= -->
+        <div class="daily-actions">
+            <form action="{{ url_for('bao_ho.danh_dau_tat_ca_dat') }}"
+                  method="POST"
+                  onsubmit="return confirmAllPass();">
+                <input type="hidden"
+                       name="ngay_kiem_tra"
+                       value="{{ ngay_chon }}">
+                <input type="hidden"
+                       name="nguoi_kiem_tra"
+                       value="Giám sát">
+                <button type="submit"
+                        class="all-pass-button">
+                    ✓ Đánh dấu tất cả ĐẠT
+                </button>
+            </form>
+            <button type="button"
+                    class="violation-button"
+                    onclick="focusWorkerSearch()">
+                ⚠ Ghi nhận công nhân KHÔNG ĐẠT
+            </button>
+        </div>
+        <!-- =================================================
+             5. TÌM KIẾM CÔNG NHÂN
+             ================================================= -->
+        <div class="worker-filter">
+            <div class="worker-search-main">
+                <span class="search-icon">🔎</span>
+                <input type="text"
+                       id="workerSearch"
+                       placeholder="Tìm theo mã hoặc tên công nhân..."
+                       oninput="filterWorkers()">
+            </div>
+            <select id="statusFilter"
+                    onchange="filterWorkers()">
+                <option value="all">Tất cả trạng thái</option>
+                <option value="Đạt">Đạt</option>
+                <option value="Không đạt">Không đạt</option>
+                <option value="Chưa kiểm tra">Chưa kiểm tra</option>
+            </select>
+        </div>
+        <!-- =================================================
+             6. DANH SÁCH CÔNG NHÂN TRONG NGÀY
+             ================================================= -->
+        <div class="daily-table-wrapper">
+            <table class="daily-check-table">
+                <thead>
+                    <tr>
+                        <th>STT</th>
+                        <th>Mã CN</th>
+                        <th>Họ và tên</th>
+                        <th>Bộ phận</th>
+                        <th>Công việc</th>
+                        <th>Trạng thái</th>
+                        <th>Ghi chú</th>
+                        <th>Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody id="workerTableBody">
+                    {% for worker in danh_sach_kiem_tra %}
+                    <tr class="worker-row"
+                        data-search="
+                            {{ worker.ma_cn }}
+                            {{ worker.ho_ten }}
+                        "
+                        data-status="
+                            {{ worker.ket_qua or 'Chưa kiểm tra' }}
+                        ">
+                        <td>{{ loop.index }}</td>
+                        <td>
+                            <span class="worker-code">{{ worker.ma_cn }}</span>
+                        </td>
+                        <td>
+                            <strong>{{ worker.ho_ten }}</strong>
+                        </td>
+                        <td>{{ worker.bo_phan or '-' }}</td>
+                        <td>{{ worker.cong_viec or '-' }}</td>
+                        <td>
+                            {% if worker.ket_qua == 'Đạt' %}
+                            <span class="status-badge status-pass">
+                                ✓ Đạt
+                            </span>
+                            {% elif worker.ket_qua == 'Không đạt' %}
+                            <span class="status-badge status-fail">
+                                ⚠ Không đạt
+                            </span>
+                            {% else %}
+                            <span class="status-badge status-pending">
+                                ○ Chưa kiểm tra
+                            </span>
+                            {% endif %}
+                        </td>
+                        <td class="worker-note">
+                            {{ worker.ghi_chu or '-' }}
+                        </td>
+                        <td>
+                            <button type="button"
+                                    class="edit-check-button"
+                                    onclick='openInspectionModal(
+                                        {{ worker.ma_cn|tojson }},
+                                        {{ worker.ho_ten|tojson }},
+                                        {{ (worker.mu_bao_ho or "Đạt")|tojson }},
+                                        {{ (worker.ao_phan_quang or "Đạt")|tojson }},
+                                        {{ (worker.giay_bao_ho or "Đạt")|tojson }},
+                                        {{ (worker.gang_tay or "Đạt")|tojson }},
+                                        {{ (worker.kinh_bao_ho or "Đạt")|tojson }},
+                                        {{ (worker.day_an_toan or "Đạt")|tojson }},
+                                        {{ (worker.nguoi_kiem_tra or "Giám sát")|tojson }},
+                                        {{ (worker.ghi_chu or "")|tojson }}
+                                    )'>
+                                Kiểm tra
+                            </button>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="8"
+                            class="empty-table">
+                            Không có công nhân đang làm việc.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+</main>
+<!-- =========================================================
+     7. CỬA SỔ KIỂM TRA / GHI NHẬN VI PHẠM
+     ========================================================= -->
+<div id="inspectionModal"
+     class="inspection-modal">
+    <div class="inspection-modal-box">
+        <div class="modal-header">
+            <div>
+                <h2>Kiểm tra bảo hộ</h2>
+                <p id="modalWorkerName">Công nhân</p>
+            </div>
+            <button type="button"
+                    class="modal-close"
+                    onclick="closeInspectionModal()">
+                ×
+            </button>
+        </div>
+        <form action="{{ url_for('bao_ho.cap_nhat_bao_ho') }}"
+              method="POST">
+            <input type="hidden"
+                   name="ma_cn"
+                   id="modalMaCn">
+            <input type="hidden"
+                   name="ngay_kiem_tra"
+                   value="{{ ngay_chon }}">
+            <!-- =============================================
+                 DANH SÁCH BẢO HỘ
+                 ============================================= -->
+            <div class="modal-ppe-grid">
+                <div class="modal-ppe-item">
+                    <label>🪖 Mũ bảo hộ</label>
+                    <select name="mu_bao_ho"
+                            id="modalMu">
+                        <option value="Đạt">Đạt</option>
+                        <option value="Không đạt">Không đạt</option>
+                    </select>
+                </div>
+                <div class="modal-ppe-item">
+                    <label>🦺 Áo phản quang</label>
+                    <select name="ao_phan_quang"
+                            id="modalAo">
+                        <option value="Đạt">Đạt</option>
+                        <option value="Không đạt">Không đạt</option>
+                    </select>
+                </div>
+                <div class="modal-ppe-item">
+                    <label>👢 Giày bảo hộ</label>
+                    <select name="giay_bao_ho"
+                            id="modalGiay">
+                        <option value="Đạt">Đạt</option>
+                        <option value="Không đạt">Không đạt</option>
+                    </select>
+                </div>
+                <div class="modal-ppe-item">
+                    <label>🧤 Găng tay</label>
+                    <select name="gang_tay"
+                            id="modalGangTay">
+                        <option value="Đạt">Đạt</option>
+                        <option value="Không đạt">Không đạt</option>
+                    </select>
+                </div>
+                <div class="modal-ppe-item">
+                    <label>🥽 Kính bảo hộ</label>
+                    <select name="kinh_bao_ho"
+                            id="modalKinh">
+                        <option value="Đạt">Đạt</option>
+                        <option value="Không đạt">Không đạt</option>
+                    </select>
+                </div>
+                <div class="modal-ppe-item">
+                    <label>🪢 Dây an toàn</label>
+                    <select name="day_an_toan"
+                            id="modalDay">
+                        <option value="Đạt">Đạt</option>
+                        <option value="Không đạt">Không đạt</option>
+                    </select>
+                </div>
+            </div>
+            <!-- =============================================
+                 NGƯỜI KIỂM TRA
+                 ============================================= -->
+            <div class="modal-form-group">
+                <label>Người kiểm tra</label>
+                <input type="text"
+                       name="nguoi_kiem_tra"
+                       id="modalNguoiKiemTra"
+                       value="Giám sát"
+                       required>
+            </div>
+            <!-- =============================================
+                 GHI CHÚ
+                 ============================================= -->
+            <div class="modal-form-group">
+                <label>Ghi chú / Nội dung vi phạm</label>
+                <textarea name="ghi_chu"
+                          id="modalGhiChu"
+                          placeholder="Ví dụ: Không đội mũ bảo hộ khi làm việc tại tầng 3...">
+                </textarea>
+            </div>
+            <div class="modal-actions">
+                <button type="button"
+                        class="modal-cancel-button"
+                        onclick="closeInspectionModal()">
+                    Hủy
+                </button>
+                <button type="submit"
+                        class="modal-save-button">
+                    ✓ Lưu kết quả
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+<!-- =========================================================
+     8. JAVASCRIPT
+     ========================================================= -->
+<script>
+    // ========================================================
+    // XÁC NHẬN ĐÁNH DẤU TẤT CẢ ĐẠT
+    // ========================================================
+    function confirmAllPass() {
+        return confirm(
+            "Đánh dấu tất cả công nhân đang làm việc là ĐẠT trong ngày {{ ngay_chon }}?"
+        );
+    }
+    // ========================================================
+    // ĐƯA CON TRỎ ĐẾN Ô TÌM KIẾM
+    // ========================================================
+    function focusWorkerSearch() {
+        const searchInput =
+            document.getElementById("workerSearch");
+        searchInput.focus();
+        searchInput.scrollIntoView({
+            behavior: "smooth",
+            block: "center"
+        });
+    }
+    // ========================================================
+    // TÌM KIẾM VÀ LỌC CÔNG NHÂN
+    // ========================================================
+    function filterWorkers() {
+        const keyword =
+            document
+                .getElementById("workerSearch")
+                .value
+                .trim()
+                .toLowerCase();
+        const status =
+            document
+                .getElementById("statusFilter")
+                .value;
+        const rows =
+            document.querySelectorAll(".worker-row");
+        rows.forEach(function (row) {
+            const workerText =
+                row.dataset.search
+                    .toLowerCase();
+            const workerStatus =
+                row.dataset.status
+                    .trim();
+            const matchKeyword =
+                workerText.includes(keyword);
+            const matchStatus =
+                status === "all"
+                || workerStatus === status;
+            if (matchKeyword && matchStatus) {
+                row.style.display = "";
+            } else {
+                row.style.display = "none";
+            }});
+    }
+    // ========================================================
+    // MỞ CỬA SỔ KIỂM TRA
+    // ========================================================
+    function openInspectionModal(
+        maCn,
+        hoTen,
+        mu,
+        ao,
+        giay,
+        gangTay,
+        kinh,
+        day,
+        nguoiKiemTra,
+        ghiChu
+    ) {
+        document.getElementById(
+            "modalMaCn"
+        ).value = maCn;
+        document.getElementById(
+            "modalWorkerName"
+        ).textContent =
+            maCn + " - " + hoTen;
+        document.getElementById(
+            "modalMu"
+        ).value = mu;
+        document.getElementById(
+            "modalAo"
+        ).value = ao;
+        document.getElementById(
+            "modalGiay"
+        ).value = giay;
+        document.getElementById(
+            "modalGangTay"
+        ).value = gangTay;
+        document.getElementById(
+            "modalKinh"
+        ).value = kinh;
+        document.getElementById(
+            "modalDay"
+        ).value = day;
+        document.getElementById(
+            "modalNguoiKiemTra"
+        ).value =
+            nguoiKiemTra || "Giám sát";
+        document.getElementById(
+            "modalGhiChu"
+        ).value =
+            ghiChu || "";
+        document.getElementById(
+            "inspectionModal"
+        ).classList.add("show");
+        document.body.classList.add(
+            "modal-open"
+        );
+    }
+    // ========================================================
+    // ĐÓNG CỬA SỔ KIỂM TRA
+    // ========================================================
+    function closeInspectionModal() {
+        document.getElementById(
+            "inspectionModal"
+        ).classList.remove("show");
+        document.body.classList.remove(
+            "modal-open"
+        );
+    }
+    // ========================================================
+    // BẤM RA NGOÀI MODAL THÌ ĐÓNG
+    // ========================================================
+    document
+        .getElementById("inspectionModal")
+        .addEventListener(
+            "click",
+            function (event) {
+                if (event.target === this) {
+                    closeInspectionModal();
+                }});
+    // ========================================================
+    // NHẤN ESC ĐỂ ĐÓNG MODAL
+    // ========================================================
+    document.addEventListener(
+        "keydown",
+        function (event) {
+            if (event.key === "Escape") {
+                closeInspectionModal();
+            }});
+</script>
+</body>
+</html>

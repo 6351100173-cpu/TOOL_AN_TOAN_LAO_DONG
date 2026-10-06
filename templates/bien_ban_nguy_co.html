@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phiếu nguy cơ {{ nguy_co.ma_nguy_co }} | ATLD</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+        body {
+            margin: 0;
+            padding: 30px;
+            background: #e2e8f0;
+            color: #111827;
+            font-family: "Times New Roman", Times, serif;
+            font-size: 15px;
+            line-height: 1.45;
+        }
+        .print-toolbar {
+            width: 210mm;
+            max-width: 100%;
+            margin: 0 auto 18px auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            font-family: Arial, sans-serif;
+        }
+        .toolbar-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .back-button,
+        .print-button {
+            border: none;
+            border-radius: 8px;
+            padding: 11px 18px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .back-button {
+            background: #ffffff;
+            color: #334155;
+            border: 1px solid #cbd5e1;
+        }
+        .print-button {
+            background: #0284c7;
+            color: #ffffff;
+        }
+        .document {
+            width: 210mm;
+            min-height: 297mm;
+            margin: 0 auto;
+            padding: 16mm 17mm 18mm 17mm;
+            background: #ffffff;
+            box-shadow: 0 4px 24px rgba(15, 23, 42, 0.15);
+        }
+        .document-header {
+            display: grid;
+            grid-template-columns: 31% 69%;
+            align-items: start;
+            margin-bottom: 12px;
+        }
+        .company-box {
+            text-align: center;
+            padding-right: 12px;
+        }
+        .company-name {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            font-size: 21px;
+            font-weight: 900;
+            color: #0f4c81;
+            letter-spacing: 1px;
+        }
+        .company-subtitle {
+            margin: 4px 0 0 0;
+            font-size: 12px;
+            font-weight: 700;
+        }
+        .national-box {
+            text-align: center;
+        }
+        .national-title {
+            margin: 0;
+            font-size: 15px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+        .national-subtitle {
+            margin: 3px 0 0 0;
+            font-size: 15px;
+            font-weight: 700;
+        }
+        .national-line {
+            width: 150px;
+            margin: 5px auto 0 auto;
+            border-bottom: 1px solid #111827;
+        }
+        .document-number {
+            margin-top: 13px;
+            text-align: left;
+            font-size: 14px;
+        }
+        .document-title {
+            margin: 22px 0 5px 0;
+            text-align: center;
+            font-size: 21px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+        .document-code {
+            margin: 0 0 18px 0;
+            text-align: center;
+            font-size: 15px;
+            font-weight: 700;
+        }
+        .intro-text {
+            margin: 0 0 12px 0;
+            text-align: justify;
+        }
+        .section-title {
+            margin: 16px 0 8px 0;
+            font-size: 15px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+        .info-table {
+            width: 100%;
+            border-collapse: collapse;
+            table-layout: fixed;
+        }
+        .info-table th,
+        .info-table td {
+            border: 1px solid #111827;
+            padding: 7px 8px;
+            vertical-align: top;
+            word-wrap: break-word;
+        }
+        .info-table th {
+            width: 22%;
+            background: #f8fafc;
+            text-align: left;
+            font-weight: 700;
+        }
+        .info-table .label-small {
+            width: 17%;
+        }
+        .risk-level {
+            font-weight: 700;
+        }
+        .risk-high {
+            color: #b91c1c;
+        }
+        .risk-medium {
+            color: #b45309;
+        }
+        .risk-low {
+            color: #15803d;
+        }
+        .status-text {
+            font-weight: 700;
+        }
+        .description-box {
+            min-height: 65px;
+            white-space: pre-wrap;
+        }
+        .solution-box {
+            min-height: 70px;
+            white-space: pre-wrap;
+        }
+        .note-box {
+            min-height: 48px;
+            white-space: pre-wrap;
+        }
+        .confirmation-text {
+            margin-top: 14px;
+            text-align: justify;
+        }
+        .signature-date {
+            margin-top: 18px;
+            text-align: right;
+            font-style: italic;
+        }
+        .signature-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-top: 12px;
+            text-align: center;
+        }
+        .signature-box {
+            min-height: 125px;
+        }
+        .signature-title {
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+        .signature-note {
+            margin-top: 2px;
+            font-size: 13px;
+            font-style: italic;
+        }
+        .signature-space {
+            height: 90px;
+        }
+        .footer-note {
+            margin-top: 12px;
+            padding-top: 8px;
+            border-top: 1px solid #d1d5db;
+            font-size: 12px;
+            color: #475569;
+            font-style: italic;
+        }
+        @media print {
+            @page {
+                size: A4;
+                margin: 0;
+            }
+            body {
+                margin: 0;
+                padding: 0;
+                background: #ffffff;
+            }
+            .print-toolbar {
+                display: none !important;
+            }
+            .document {
+                width: 210mm;
+                min-height: 297mm;
+                margin: 0;
+                padding: 14mm 16mm 15mm 16mm;
+                box-shadow: none;
+            }
+            .info-table th {
+                background: #ffffff;
+            }
+        }
+        @media screen and (max-width: 900px) {
+            body {
+                padding: 12px;
+            }
+            .print-toolbar {
+                width: 100%;
+            }
+            .document {
+                width: 100%;
+                min-height: auto;
+                padding: 25px 20px;
+            }
+            .document-header {
+                grid-template-columns: 1fr;
+                gap: 18px;
+            }
+            .company-box {
+                padding-right: 0;
+            }
+            .signature-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="print-toolbar">
+    <div class="toolbar-left">
+        <a href="{{ url_for('nguy_co.danh_sach_nguy_co', ngay=nguy_co.ngay_phat_hien) }}"
+           class="back-button">
+            ← Quay lại
+        </a>
+    </div>
+    <button type="button"
+            class="print-button"
+            onclick="window.print()">
+        🖨 In / Lưu PDF
+    </button>
+</div>
+<div class="document">
+    <div class="document-header">
+        <div class="company-box">
+            <h2 class="company-name">VIBACON</h2>
+            <p class="company-subtitle">BAN AN TOÀN LAO ĐỘNG</p>
+            <div class="document-number">
+                Số: {{ nguy_co.ma_nguy_co }}/ATLD
+            </div>
+        </div>
+        <div class="national-box">
+            <p class="national-title">CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM</p>
+            <p class="national-subtitle">Độc lập - Tự do - Hạnh phúc</p>
+            <div class="national-line"></div>
+        </div>
+    </div>
+    <h1 class="document-title">
+        PHIẾU GHI NHẬN VÀ XỬ LÝ NGUY CƠ
+    </h1>
+    <p class="document-code">
+        AN TOÀN LAO ĐỘNG
+    </p>
+    <p class="intro-text">
+        Phiếu này được lập nhằm ghi nhận, đánh giá và theo dõi việc xử lý
+        nguy cơ mất an toàn lao động được phát hiện tại công trường.
+    </p>
+    <div class="section-title">
+        I. THÔNG TIN NGUY CƠ
+    </div>
+    <table class="info-table">
+        <tr>
+            <th>Mã nguy cơ</th>
+            <td>
+                <strong>{{ nguy_co.ma_nguy_co }}</strong>
+            </td>
+            <th class="label-small">Mức độ</th>
+            <td>
+                {% if nguy_co.muc_do == "Cao" %}
+                <span class="risk-level risk-high">
+                    CAO
+                </span>
+                {% elif nguy_co.muc_do == "Thấp" %}
+                <span class="risk-level risk-low">
+                    THẤP
+                </span>
+                {% else %}
+                <span class="risk-level risk-medium">
+                    TRUNG BÌNH
+                </span>
+                {% endif %}
+            </td>
+        </tr>
+        <tr>
+            <th>Ngày phát hiện</th>
+            <td>
+                {% if nguy_co.ngay_phat_hien %}
+                {{ nguy_co.ngay_phat_hien[8:10] }}/{{ nguy_co.ngay_phat_hien[5:7] }}/{{ nguy_co.ngay_phat_hien[0:4] }}
+                {% else %}
+                -
+                {% endif %}
+            </td>
+            <th class="label-small">Thời gian</th>
+            <td>
+                {{ nguy_co.thoi_gian or '-' }}
+            </td>
+        </tr>
+        <tr>
+            <th>Khu vực phát hiện</th>
+            <td colspan="3">
+                {{ nguy_co.khu_vuc or '-' }}
+            </td>
+        </tr>
+        <tr>
+            <th>Loại nguy cơ</th>
+            <td colspan="3">
+                {{ nguy_co.loai_nguy_co or '-' }}
+            </td>
+        </tr>
+        <tr>
+            <th>Người phát hiện</th>
+            <td colspan="3">
+                {{ nguy_co.nguoi_phat_hien or '-' }}
+            </td>
+        </tr>
+        <tr>
+            <th>Mô tả nguy cơ</th>
+            <td colspan="3"
+                class="description-box">
+                {{ nguy_co.mo_ta or '-' }}
+            </td>
+        </tr>
+        <tr>
+            <th>Ghi chú</th>
+            <td colspan="3"
+                class="note-box">
+                {{ nguy_co.ghi_chu or '-' }}
+            </td>
+        </tr>
+    </table>
+    <div class="section-title">
+        II. CÔNG NHÂN LIÊN QUAN
+    </div>
+    <table class="info-table">
+        <tr>
+            <th>Mã công nhân</th>
+            <td>
+                {{ nguy_co.ma_cn or '-' }}
+            </td>
+            <th class="label-small">Họ và tên</th>
+            <td>
+                {{ nguy_co.ho_ten or '-' }}
+            </td>
+        </tr>
+        <tr>
+            <th>Bộ phận</th>
+            <td>
+                {{ nguy_co.bo_phan or '-' }}
+            </td>
+            <th class="label-small">Công việc</th>
+            <td>
+                {{ nguy_co.cong_viec or '-' }}
+            </td>
+        </tr>
+        <tr>
+            <th>Số điện thoại</th>
+            <td colspan="3">
+                {{ nguy_co.so_dien_thoai or '-' }}
+            </td>
+        </tr>
+    </table>
+    <div class="section-title">
+        III. BIỆN PHÁP VÀ TÌNH TRẠNG XỬ LÝ
+    </div>
+    <table class="info-table">
+        <tr>
+            <th>Trạng thái</th>
+            <td colspan="3">
+                <span class="status-text">
+                    {{ nguy_co.trang_thai or 'Chưa xử lý' }}
+                </span>
+            </td>
+        </tr>
+        <tr>
+            <th>Biện pháp xử lý</th>
+            <td colspan="3"
+                class="solution-box">
+                {{ nguy_co.bien_phap_xu_ly or 'Chưa cập nhật biện pháp xử lý.' }}
+            </td>
+        </tr>
+        <tr>
+            <th>Người phụ trách</th>
+            <td>
+                {{ nguy_co.nguoi_phu_trach or '-' }}
+            </td>
+            <th class="label-small">Hạn xử lý</th>
+            <td>
+                {% if nguy_co.han_xu_ly %}
+                {{ nguy_co.han_xu_ly[8:10] }}/{{ nguy_co.han_xu_ly[5:7] }}/{{ nguy_co.han_xu_ly[0:4] }}
+                {% else %}
+                -
+                {% endif %}
+            </td>
+        </tr>
+        <tr>
+            <th>Ghi chú xử lý</th>
+            <td colspan="3"
+                class="note-box">
+                {{ nguy_co.ghi_chu_xu_ly or '-' }}
+            </td>
+        </tr>
+    </table>
+    <p class="confirmation-text">
+        Các bên liên quan xác nhận những thông tin trên là đúng với tình trạng
+        nguy cơ được ghi nhận tại thời điểm lập phiếu và có trách nhiệm thực
+        hiện, theo dõi các biện pháp xử lý nhằm bảo đảm an toàn lao động.
+    </p>
+    <div class="signature-date">
+        Ngày ..... tháng ..... năm .........
+    </div>
+    <div class="signature-grid">
+        <div class="signature-box">
+            <div class="signature-title">
+                CÔNG NHÂN
+            </div>
+            <div class="signature-note">
+                (Ký và ghi rõ họ tên)
+            </div>
+            <div class="signature-space"></div>
+        </div>
+        <div class="signature-box">
+            <div class="signature-title">
+                NGƯỜI PHỤ TRÁCH XỬ LÝ
+            </div>
+            <div class="signature-note">
+                (Ký và ghi rõ họ tên)
+            </div>
+            <div class="signature-space"></div>
+        </div>
+        <div class="signature-box">
+            <div class="signature-title">
+                CÁN BỘ AN TOÀN
+            </div>
+            <div class="signature-note">
+                (Ký và ghi rõ họ tên)
+            </div>
+            <div class="signature-space"></div>
+        </div>
+    </div>
+    <div class="footer-note">
+        Phiếu được lập từ Hệ thống quản lý An toàn lao động VIBACON -
+        Mã nguy cơ: {{ nguy_co.ma_nguy_co }}.
+    </div>
+</div>
+</body>
+</html>

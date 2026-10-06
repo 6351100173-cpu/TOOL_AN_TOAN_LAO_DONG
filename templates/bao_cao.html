@@ -1,0 +1,931 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Báo cáo | ATLD</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        .report-filter {
+            background: #ffffff;
+            border-radius: 14px;
+            padding: 20px 24px;
+            margin-bottom: 22px;
+            box-shadow: 0 4px 18px rgba(15, 23, 42, 0.05);
+        }
+        .report-filter-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        .report-period-tabs,
+        .report-filter-controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .report-period-button {
+            min-width: 90px;
+            height: 44px;
+            padding: 0 20px;
+            border: 1px solid #d5dde3;
+            border-radius: 8px;
+            background: #f8fafc;
+            color: #334155;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+        .report-period-button.active {
+            background: #4f6977;
+            border-color: #4f6977;
+            color: #ffffff;
+        }
+        .report-period-display {
+            height: 44px;
+            padding: 0 15px;
+            border: 1px solid #d5dde3;
+            border-radius: 8px;
+            background: #ffffff;
+            display: flex;
+            align-items: center;
+            color: #475569;
+            font-size: 14px;
+            font-weight: 700;
+        }
+        .report-time-input {
+            height: 44px;
+            min-width: 190px;
+            padding: 0 12px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            background: #ffffff;
+            color: #1e293b;
+            font-size: 14px;
+        }
+        .report-apply-button,
+        .report-print-button {
+            height: 44px;
+            padding: 0 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+        .report-apply-button {
+            background: #263d48;
+            color: #ffffff;
+        }
+        .report-print-button {
+            background: #2563eb;
+            color: #ffffff;
+        }
+        .report-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 22px;
+            flex-wrap: wrap;
+        }
+        .report-tab {
+            padding: 11px 18px;
+            border-radius: 8px;
+            background: #ffffff;
+            color: #475569;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 700;
+            border: 1px solid #dce3e8;
+        }
+        .report-tab.active {
+            background: #4f6977;
+            border-color: #4f6977;
+            color: #ffffff;
+        }
+        .report-paper {
+            background: #ffffff;
+            border-radius: 14px;
+            padding: 30px;
+            box-shadow: 0 4px 18px rgba(15, 23, 42, 0.05);
+            margin-bottom: 30px;
+        }
+        .report-title {
+            text-align: center;
+            padding-bottom: 22px;
+            border-bottom: 2px solid #e2e8f0;
+            margin-bottom: 24px;
+        }
+        .report-title h2 {
+            margin: 0 0 8px;
+            color: #1e293b;
+            font-size: 25px;
+        }
+        .report-title p {
+            margin: 4px 0;
+            color: #64748b;
+            font-size: 14px;
+        }
+        .report-cards {
+            display: grid;
+            grid-template-columns: repeat(5, minmax(0, 1fr));
+            gap: 16px;
+            margin-bottom: 28px;
+        }
+        .report-card {
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 18px;
+            background: #f8fafc;
+        }
+        .report-card-icon {
+            font-size: 25px;
+            margin-bottom: 10px;
+        }
+        .report-card p {
+            margin: 0 0 7px;
+            color: #64748b;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+        .report-card h3 {
+            margin: 0;
+            color: #1e293b;
+            font-size: 27px;
+        }
+        .report-card small {
+            display: block;
+            margin-top: 6px;
+            color: #64748b;
+        }
+        .report-section {
+            margin-top: 28px;
+        }
+        .report-section h3 {
+            margin: 0 0 14px;
+            color: #1e293b;
+            font-size: 18px;
+        }
+        .report-table-wrapper {
+            width: 100%;
+            overflow-x: auto;
+        }
+        .report-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .report-table th {
+            background: #eef2f5;
+            color: #475569;
+            padding: 11px 10px;
+            border: 1px solid #dce3e8;
+            text-align: left;
+            font-size: 12px;
+            white-space: nowrap;
+        }
+        .report-table td {
+            padding: 11px 10px;
+            border: 1px solid #e5eaf0;
+            color: #334155;
+            font-size: 13px;
+            vertical-align: top;
+        }
+        .report-status {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 5px 9px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+        .report-status-success {
+            background: #dcfce7;
+            color: #15803d;
+        }
+        .report-status-warning {
+            background: #fef3c7;
+            color: #b45309;
+        }
+        .report-status-danger {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+        .report-summary-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 22px;
+        }
+        .report-summary-box {
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 20px;
+        }
+        .report-summary-box h3 {
+            margin: 0 0 15px;
+            color: #1e293b;
+            font-size: 17px;
+        }
+        .report-summary-line {
+            display: flex;
+            justify-content: space-between;
+            gap: 15px;
+            padding: 9px 0;
+            border-bottom: 1px solid #eef2f7;
+            color: #475569;
+            font-size: 14px;
+        }
+        .report-summary-line:last-child {
+            border-bottom: none;
+        }
+        .report-summary-line strong {
+            color: #1e293b;
+        }
+        .report-empty {
+            padding: 30px !important;
+            text-align: center;
+            color: #94a3b8 !important;
+        }
+        .report-signatures {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 35px;
+            margin-top: 55px;
+            text-align: center;
+        }
+        .report-signature strong {
+            display: block;
+            color: #1e293b;
+            font-size: 14px;
+            text-transform: uppercase;
+        }
+        .report-signature span {
+            display: block;
+            margin-top: 6px;
+            color: #64748b;
+            font-size: 12px;
+            font-style: italic;
+        }
+        .report-signature-space {
+            height: 85px;
+        }
+        @media (max-width: 1300px) {
+            .report-cards {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+        @media (max-width: 900px) {
+            .report-cards,
+            .report-summary-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        @media print {
+            @page {
+                size: A4 portrait;
+                margin: 10mm;
+            }
+            body {
+                background: #ffffff !important;
+            }
+            .sidebar,
+            .top-header,
+            .report-filter,
+            .report-tabs {
+                display: none !important;
+            }
+            .main-content {
+                margin-left: 0 !important;
+                padding: 0 !important;
+                width: 100% !important;
+            }
+            .report-paper {
+                width: 100% !important;
+                max-width: none !important;
+                box-shadow: none !important;
+                border-radius: 0 !important;
+                padding: 0 !important;
+                margin: 0 !important;
+            }
+            .report-title {
+                padding-bottom: 8px !important;
+                margin-bottom: 10px !important;
+            }
+            .report-title h2 {
+                margin: 0 0 3px !important;
+                font-size: 18px !important;
+            }
+            .report-title p {
+                margin: 2px 0 !important;
+                font-size: 9px !important;
+            }
+            .report-cards {
+                display: grid !important;
+                grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
+                gap: 5px !important;
+                margin-bottom: 10px !important;
+                page-break-inside: avoid !important;
+                break-inside: avoid !important;
+            }
+            .report-card {
+                min-width: 0 !important;
+                padding: 7px 6px !important;
+                border-radius: 6px !important;
+                page-break-inside: avoid !important;
+                break-inside: avoid !important;
+            }
+            .report-card-icon {
+                font-size: 15px !important;
+                margin-bottom: 2px !important;
+            }
+            .report-card p {
+                margin: 0 0 2px !important;
+                font-size: 6.5px !important;
+                white-space: nowrap !important;
+            }
+            .report-card h3 {
+                margin: 0 !important;
+                font-size: 17px !important;
+                line-height: 1 !important;
+            }
+            .report-card small {
+                display: block !important;
+                margin-top: 3px !important;
+                font-size: 6.5px !important;
+                line-height: 1.15 !important;
+            }
+            .report-summary-grid {
+                display: grid !important;
+                grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+                gap: 7px !important;
+                page-break-inside: avoid !important;
+                break-inside: avoid !important;
+            }
+            .report-summary-box {
+                min-width: 0 !important;
+                padding: 8px 10px !important;
+                border-radius: 6px !important;
+                page-break-inside: avoid !important;
+                break-inside: avoid !important;
+            }
+            .report-summary-box h3 {
+                margin: 0 0 4px !important;
+                font-size: 9px !important;
+            }
+            .report-summary-line {
+                gap: 5px !important;
+                padding: 2px 0 !important;
+                font-size: 7.5px !important;
+            }
+            .report-section {
+                margin-top: 9px !important;
+            }
+            .report-section h3 {
+                margin: 0 0 4px !important;
+                font-size: 9px !important;
+            }
+            .report-table-wrapper {
+                width: 100% !important;
+                overflow: visible !important;
+            }
+            .report-table {
+                width: 100% !important;
+                border-collapse: collapse !important;
+                page-break-inside: auto;
+            }
+            .report-table th {
+                padding: 3px 4px !important;
+                font-size: 7px !important;
+            }
+            .report-table td {
+                padding: 3px 4px !important;
+                font-size: 7px !important;
+            }
+            .report-table tr {
+                page-break-inside: avoid !important;
+                break-inside: avoid !important;
+            }
+            .report-signatures {
+                grid-template-columns: repeat(3, 1fr) !important;
+                gap: 15px !important;
+                margin-top: 18px !important;
+                page-break-inside: avoid !important;
+                break-inside: avoid !important;
+            }
+            .report-signature strong {
+                font-size: 8px !important;
+            }
+            .report-signature span {
+                margin-top: 2px !important;
+                font-size: 7px !important;
+            }
+            .report-signature-space {
+                height: 40px !important;
+            }
+        }
+    </style>
+</head>
+<body>
+<aside class="sidebar">
+    <div class="logo">
+        <h2>ATLD</h2>
+        <p>AN TOÀN LAO ĐỘNG</p>
+    </div>
+    <nav>
+        <a href="/" class="menu-item">🏠 <span>Trang chủ</span></a>
+        <a href="/cong-nhan" class="menu-item">👷 <span>Công nhân</span></a>
+        <a href="{{ url_for('bao_ho.kiem_tra_bao_ho') }}" class="menu-item">🦺 <span>Kiểm tra bảo hộ</span></a>
+        <a href="{{ url_for('vi_pham.danh_sach_vi_pham') }}" class="menu-item">⚠️ <span>Vi phạm</span></a>
+        <a href="{{ url_for('nguy_co.danh_sach_nguy_co') }}" class="menu-item">🚧 <span>Nguy cơ</span></a>
+        <a href="{{ url_for('thong_ke.thong_ke') }}" class="menu-item">📊 <span>Thống kê</span></a>
+        <a href="{{ url_for('bao_cao.bao_cao') }}" class="menu-item active">📄 <span>Báo cáo</span></a>
+    </nav>
+</aside>
+<main class="main-content">
+    <header class="top-header">
+        <div>
+            <h1>BÁO CÁO AN TOÀN LAO ĐỘNG</h1>
+            <p>Tổng hợp dữ liệu, theo dõi và lập báo cáo an toàn công trường</p>
+        </div>
+        <div class="vibacon-box">
+            <span class="vibacon-text">VIBACON</span>
+        </div>
+    </header>
+    <form method="GET"
+          action="{{ url_for('bao_cao.bao_cao') }}"
+          id="reportFilterForm"
+          class="report-filter">
+        <input type="hidden"
+               name="che_do"
+               id="reportMode"
+               value="{{ che_do }}">
+        <input type="hidden"
+               name="loai"
+               value="{{ loai_bao_cao }}">
+        <div class="report-filter-row">
+            <div class="report-period-tabs">
+                <button type="button"
+                        class="report-period-button {% if che_do == 'ngay' %}active{% endif %}"
+                        onclick="changeReportMode('ngay')">
+                    Ngày
+                </button>
+                <button type="button"
+                        class="report-period-button {% if che_do == 'tuan' %}active{% endif %}"
+                        onclick="changeReportMode('tuan')">
+                    Tuần
+                </button>
+                <button type="button"
+                        class="report-period-button {% if che_do == 'thang' %}active{% endif %}"
+                        onclick="changeReportMode('thang')">
+                    Tháng
+                </button>
+                <button type="button"
+                        class="report-period-button {% if che_do == 'nam' %}active{% endif %}"
+                        onclick="changeReportMode('nam')">
+                    Năm
+                </button>
+            </div>
+            <div class="report-filter-controls">
+                <div class="report-period-display">
+                    📅 {{ khoang_thoi_gian }}
+                </div>
+                {% if che_do == 'ngay' %}
+                <input type="date"
+                       id="reportTimeInput"
+                       name="thoi_gian"
+                       value="{{ thoi_gian }}"
+                       class="report-time-input">
+                {% elif che_do == 'tuan' %}
+                <input type="date"
+                       id="reportTimeInput"
+                       name="thoi_gian"
+                       value="{{ thoi_gian }}"
+                       class="report-time-input">
+                {% elif che_do == 'thang' %}
+                <input type="month"
+                       id="reportTimeInput"
+                       name="thoi_gian"
+                       value="{{ thoi_gian }}"
+                       class="report-time-input">
+                {% else %}
+                <input type="number"
+                       id="reportTimeInput"
+                       name="thoi_gian"
+                       value="{{ thoi_gian }}"
+                       min="2020"
+                       max="2100"
+                       class="report-time-input">
+                {% endif %}
+                <button type="submit"
+                        class="report-apply-button">
+                    Áp dụng
+                </button>
+                <button type="button"
+                        class="report-print-button"
+                        onclick="window.print()">
+                    🖨 In báo cáo
+                </button>
+            </div>
+        </div>
+    </form>
+    <div class="report-tabs">
+        <a href="{{ url_for('bao_cao.bao_cao', che_do=che_do, thoi_gian=thoi_gian, loai='tong-hop') }}"
+           class="report-tab {% if loai_bao_cao == 'tong-hop' %}active{% endif %}">
+            📄 Báo cáo tổng hợp
+        </a>
+        <a href="{{ url_for('bao_cao.bao_cao', che_do=che_do, thoi_gian=thoi_gian, loai='cong-nhan') }}"
+           class="report-tab {% if loai_bao_cao == 'cong-nhan' %}active{% endif %}">
+            👷 Công nhân
+        </a>
+        <a href="{{ url_for('bao_cao.bao_cao', che_do=che_do, thoi_gian=thoi_gian, loai='bao-ho') }}"
+           class="report-tab {% if loai_bao_cao == 'bao-ho' %}active{% endif %}">
+            🦺 Kiểm tra bảo hộ
+        </a>
+        <a href="{{ url_for('bao_cao.bao_cao', che_do=che_do, thoi_gian=thoi_gian, loai='vi-pham') }}"
+           class="report-tab {% if loai_bao_cao == 'vi-pham' %}active{% endif %}">
+            ⚠️ Vi phạm
+        </a>
+        <a href="{{ url_for('bao_cao.bao_cao', che_do=che_do, thoi_gian=thoi_gian, loai='nguy-co') }}"
+           class="report-tab {% if loai_bao_cao == 'nguy-co' %}active{% endif %}">
+            🚧 Nguy cơ
+        </a>
+    </div>
+    <section class="report-paper">
+        <div class="report-title">
+            {% if loai_bao_cao == 'tong-hop' %}
+            <h2>BÁO CÁO TỔNG HỢP AN TOÀN LAO ĐỘNG</h2>
+            {% elif loai_bao_cao == 'cong-nhan' %}
+            <h2>BÁO CÁO DANH SÁCH CÔNG NHÂN</h2>
+            {% elif loai_bao_cao == 'bao-ho' %}
+            <h2>BÁO CÁO KIỂM TRA BẢO HỘ LAO ĐỘNG</h2>
+            {% elif loai_bao_cao == 'vi-pham' %}
+            <h2>BÁO CÁO VI PHẠM AN TOÀN LAO ĐỘNG</h2>
+            {% else %}
+            <h2>BÁO CÁO NGUY CƠ AN TOÀN LAO ĐỘNG</h2>
+            {% endif %}
+            <p><strong>VIBACON - Hệ thống quản lý an toàn lao động</strong></p>
+            <p>Thời gian báo cáo: {{ khoang_thoi_gian }}</p>
+        </div>
+        {% if loai_bao_cao == 'tong-hop' %}
+        <div class="report-cards">
+            <div class="report-card">
+                <div class="report-card-icon">👷</div>
+                <p>Công nhân</p>
+                <h3>{{ stats.tong_cong_nhan }}</h3>
+                <small>{{ stats.cong_nhan_dang_lam }} đang làm việc</small>
+            </div>
+            <div class="report-card">
+                <div class="report-card-icon">🦺</div>
+                <p>Kiểm tra BHLĐ</p>
+                <h3>{{ stats.tong_kiem_tra }}</h3>
+                <small>{{ stats.bao_ho_dat }} đạt · {{ stats.bao_ho_khong_dat }} không đạt</small>
+            </div>
+            <div class="report-card">
+                <div class="report-card-icon">⚠️</div>
+                <p>Vi phạm</p>
+                <h3>{{ stats.tong_vi_pham }}</h3>
+                <small>{{ stats.vi_pham_chua_xu_ly }} chưa xử lý</small>
+            </div>
+            <div class="report-card">
+                <div class="report-card-icon">🚧</div>
+                <p>Nguy cơ</p>
+                <h3>{{ stats.tong_nguy_co }}</h3>
+                <small>{{ stats.nguy_co_da_xu_ly }} đã xử lý</small>
+            </div>
+            <div class="report-card">
+                <div class="report-card-icon">🚨</div>
+                <p>Nguy cơ cao</p>
+                <h3>{{ stats.nguy_co_cao }}</h3>
+                <small>Cần ưu tiên kiểm soát</small>
+            </div>
+        </div>
+        <div class="report-summary-grid">
+            <div class="report-summary-box">
+                <h3>Tình hình kiểm tra bảo hộ</h3>
+                <div class="report-summary-line">
+                    <span>Tổng lượt kiểm tra</span>
+                    <strong>{{ stats.tong_kiem_tra }}</strong>
+                </div>
+                <div class="report-summary-line">
+                    <span>Kết quả đạt</span>
+                    <strong>{{ stats.bao_ho_dat }}</strong>
+                </div>
+                <div class="report-summary-line">
+                    <span>Kết quả không đạt</span>
+                    <strong>{{ stats.bao_ho_khong_dat }}</strong>
+                </div>
+                <div class="report-summary-line">
+                    <span>Tỷ lệ đạt</span>
+                    <strong>{{ stats.ty_le_bao_ho_dat }}%</strong>
+                </div>
+            </div>
+            <div class="report-summary-box">
+                <h3>Tình hình vi phạm</h3>
+                <div class="report-summary-line">
+                    <span>Tổng vi phạm</span>
+                    <strong>{{ stats.tong_vi_pham }}</strong>
+                </div>
+                <div class="report-summary-line">
+                    <span>Chưa xử lý</span>
+                    <strong>{{ stats.vi_pham_chua_xu_ly }}</strong>
+                </div>
+                <div class="report-summary-line">
+                    <span>Đã xử lý</span>
+                    <strong>{{ stats.vi_pham_da_xu_ly }}</strong>
+                </div>
+                <div class="report-summary-line">
+                    <span>Mức độ cao</span>
+                    <strong>{{ stats.vi_pham_cao }}</strong>
+                </div>
+                <div class="report-summary-line">
+                    <span>Tổng tiền phạt</span>
+                    <strong>{{ "{:,.0f}".format(stats.tong_tien_phat or 0) }} VND</strong>
+                </div>
+            </div>
+            <div class="report-summary-box">
+                <h3>Tình hình nguy cơ</h3>
+                <div class="report-summary-line">
+                    <span>Tổng nguy cơ</span>
+                    <strong>{{ stats.tong_nguy_co }}</strong>
+                </div>
+                <div class="report-summary-line">
+                    <span>Chưa xử lý</span>
+                    <strong>{{ stats.nguy_co_chua_xu_ly }}</strong>
+                </div>
+                <div class="report-summary-line">
+                    <span>Đang xử lý</span>
+                    <strong>{{ stats.nguy_co_dang_xu_ly }}</strong>
+                </div>
+                <div class="report-summary-line">
+                    <span>Đã xử lý</span>
+                    <strong>{{ stats.nguy_co_da_xu_ly }}</strong>
+                </div>
+                <div class="report-summary-line">
+                    <span>Nguy cơ cao</span>
+                    <strong>{{ stats.nguy_co_cao }}</strong>
+                </div>
+            </div>
+            <div class="report-summary-box">
+                <h3>Hiệu quả xử lý</h3>
+                <div class="report-summary-line">
+                    <span>Vi phạm đã xử lý</span>
+                    <strong>{{ stats.ty_le_vi_pham_da_xu_ly }}%</strong>
+                </div>
+                <div class="report-summary-line">
+                    <span>Nguy cơ đã xử lý</span>
+                    <strong>{{ stats.ty_le_nguy_co_da_xu_ly }}%</strong>
+                </div>
+                <div class="report-summary-line">
+                    <span>Công nhân đang làm việc</span>
+                    <strong>{{ stats.cong_nhan_dang_lam }}</strong>
+                </div>
+            </div>
+        </div>
+        <div class="report-section">
+            <h3>Phân bố vi phạm theo mức độ</h3>
+            <div class="report-table-wrapper">
+                <table class="report-table">
+                    <thead>
+                        <tr>
+                            <th>STT</th>
+                            <th>Mức độ</th>
+                            <th>Số lượng</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in vi_pham_theo_muc_do %}
+                        <tr>
+                            <td>{{ loop.index }}</td>
+                            <td>{{ item.muc_do }}</td>
+                            <td>{{ item.so_luong }}</td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="3" class="report-empty">Chưa có dữ liệu vi phạm.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="report-section">
+            <h3>Phân bố nguy cơ theo khu vực</h3>
+            <div class="report-table-wrapper">
+                <table class="report-table">
+                    <thead>
+                        <tr>
+                            <th>STT</th>
+                            <th>Khu vực</th>
+                            <th>Số nguy cơ</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in nguy_co_theo_khu_vuc %}
+                        <tr>
+                            <td>{{ loop.index }}</td>
+                            <td>{{ item.khu_vuc }}</td>
+                            <td>{{ item.so_luong }}</td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="3" class="report-empty">Chưa có dữ liệu nguy cơ.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        {% elif loai_bao_cao == 'cong-nhan' %}
+        <div class="report-table-wrapper">
+            <table class="report-table">
+                <thead>
+                    <tr>
+                        <th>STT</th>
+                        <th>Mã CN</th>
+                        <th>Họ và tên</th>
+                        <th>Bộ phận</th>
+                        <th>Công việc</th>
+                        <th>Số điện thoại</th>
+                        <th>Trạng thái</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in danh_sach_cong_nhan %}
+                    <tr>
+                        <td>{{ loop.index }}</td>
+                        <td>{{ item.ma_cn }}</td>
+                        <td>{{ item.ho_ten }}</td>
+                        <td>{{ item.bo_phan or '-' }}</td>
+                        <td>{{ item.cong_viec or '-' }}</td>
+                        <td>{{ item.so_dien_thoai or '-' }}</td>
+                        <td>{{ item.trang_thai }}</td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="7" class="report-empty">Chưa có dữ liệu công nhân.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% elif loai_bao_cao == 'bao-ho' %}
+        <div class="report-table-wrapper">
+            <table class="report-table">
+                <thead>
+                    <tr>
+                        <th>STT</th>
+                        <th>Ngày</th>
+                        <th>Mã CN</th>
+                        <th>Họ và tên</th>
+                        <th>Bộ phận</th>
+                        <th>Mũ</th>
+                        <th>Áo PQ</th>
+                        <th>Giày</th>
+                        <th>Găng tay</th>
+                        <th>Kính</th>
+                        <th>Dây AT</th>
+                        <th>Kết quả</th>
+                        <th>Người kiểm tra</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in danh_sach_bao_ho %}
+                    <tr>
+                        <td>{{ loop.index }}</td>
+                        <td>{{ item.ngay_kiem_tra }}</td>
+                        <td>{{ item.ma_cn }}</td>
+                        <td>{{ item.ho_ten or '-' }}</td>
+                        <td>{{ item.bo_phan or '-' }}</td>
+                        <td>{{ item.mu_bao_ho or '-' }}</td>
+                        <td>{{ item.ao_phan_quang or '-' }}</td>
+                        <td>{{ item.giay_bao_ho or '-' }}</td>
+                        <td>{{ item.gang_tay or '-' }}</td>
+                        <td>{{ item.kinh_bao_ho or '-' }}</td>
+                        <td>{{ item.day_an_toan or '-' }}</td>
+                        <td>{{ item.ket_qua or '-' }}</td>
+                        <td>{{ item.nguoi_kiem_tra or '-' }}</td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="13" class="report-empty">Không có dữ liệu kiểm tra trong thời gian này.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% elif loai_bao_cao == 'vi-pham' %}
+        <div class="report-table-wrapper">
+            <table class="report-table">
+                <thead>
+                    <tr>
+                        <th>STT</th>
+                        <th>Ngày</th>
+                        <th>Mã CN</th>
+                        <th>Họ và tên</th>
+                        <th>Bộ phận</th>
+                        <th>Nội dung vi phạm</th>
+                        <th>Mức độ</th>
+                        <th>Trạng thái</th>
+                        <th>Hình thức xử lý</th>
+                        <th>Tiền phạt</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in danh_sach_vi_pham %}
+                    <tr>
+                        <td>{{ loop.index }}</td>
+                        <td>{{ item.ngay_vi_pham }}</td>
+                        <td>{{ item.ma_cn }}</td>
+                        <td>{{ item.ho_ten or '-' }}</td>
+                        <td>{{ item.bo_phan or '-' }}</td>
+                        <td>{{ item.noi_dung }}</td>
+                        <td>{{ item.muc_do }}</td>
+                        <td>{{ item.trang_thai }}</td>
+                        <td>{{ item.hinh_thuc_xu_ly or '-' }}</td>
+                        <td>{{ "{:,.0f}".format(item.so_tien_phat or 0) }} VND</td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="10" class="report-empty">Không có vi phạm trong thời gian này.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="report-table-wrapper">
+            <table class="report-table">
+                <thead>
+                    <tr>
+                        <th>STT</th>
+                        <th>Mã NC</th>
+                        <th>Ngày</th>
+                        <th>Mã CN</th>
+                        <th>Họ và tên</th>
+                        <th>Khu vực</th>
+                        <th>Loại nguy cơ</th>
+                        <th>Mức độ</th>
+                        <th>Trạng thái</th>
+                        <th>Biện pháp xử lý</th>
+                        <th>Người phụ trách</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in danh_sach_nguy_co %}
+                    <tr>
+                        <td>{{ loop.index }}</td>
+                        <td>{{ item.ma_nguy_co }}</td>
+                        <td>{{ item.ngay_phat_hien }}</td>
+                        <td>{{ item.ma_cn or '-' }}</td>
+                        <td>{{ item.ho_ten or '-' }}</td>
+                        <td>{{ item.khu_vuc }}</td>
+                        <td>{{ item.loai_nguy_co }}</td>
+                        <td>{{ item.muc_do }}</td>
+                        <td>{{ item.trang_thai }}</td>
+                        <td>{{ item.bien_phap_xu_ly or '-' }}</td>
+                        <td>{{ item.nguoi_phu_trach or '-' }}</td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="11" class="report-empty">Không có nguy cơ trong thời gian này.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% endif %}
+        <div class="report-signatures">
+            <div class="report-signature">
+                <strong>NGƯỜI LẬP BÁO CÁO</strong>
+                <span>(Ký và ghi rõ họ tên)</span>
+                <div class="report-signature-space"></div>
+            </div>
+            <div class="report-signature">
+                <strong>CÁN BỘ AN TOÀN</strong>
+                <span>(Ký và ghi rõ họ tên)</span>
+                <div class="report-signature-space"></div>
+            </div>
+            <div class="report-signature">
+                <strong>CHỈ HUY TRƯỞNG</strong>
+                <span>(Ký và ghi rõ họ tên)</span>
+                <div class="report-signature-space"></div>
+            </div>
+        </div>
+    </section>
+</main>
+<script>
+function changeReportMode(mode) {
+    document.getElementById("reportMode").value = mode;
+    const timeInput = document.getElementById("reportTimeInput");
+    if (timeInput) {
+        timeInput.removeAttribute("name");
+    }
+    document.getElementById("reportFilterForm").submit();
+}
+</script>
+</body>
+</html>

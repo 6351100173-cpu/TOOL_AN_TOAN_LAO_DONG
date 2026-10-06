@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vi phạm | ATLD</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<!-- =========================================================
+     1. SIDEBAR
+     ========================================================= -->
+<aside class="sidebar">
+    <div class="logo">
+        <h2>ATLD</h2>
+        <p>AN TOÀN LAO ĐỘNG</p>
+    </div>
+    <nav>
+        <a href="/" class="menu-item">
+            🏠
+            <span>Trang chủ</span>
+        </a>
+        <a href="/cong-nhan" class="menu-item">
+            👷
+            <span>Công nhân</span>
+        </a>
+        <a href="{{ url_for('bao_ho.kiem_tra_bao_ho') }}" class="menu-item">
+            🦺
+            <span>Kiểm tra bảo hộ</span>
+        </a>
+        <a href="{{ url_for('vi_pham.danh_sach_vi_pham') }}" class="menu-item active">
+            ⚠️
+            <span>Vi phạm</span>
+        </a>
+        <a href="{{ url_for('nguy_co.danh_sach_nguy_co') }}" class="menu-item">
+            🚧
+            <span>Nguy cơ</span>
+        </a>
+        <a href="{{ url_for('thong_ke.thong_ke') }}" class="menu-item">
+            📊
+            <span>Thống kê</span>
+        </a>
+        <a href="{{ url_for('bao_cao.bao_cao') }}" class="menu-item">
+            📄
+            <span>Báo cáo</span>
+        </a>
+    </nav>
+</aside>
+<!-- =========================================================
+     2. NỘI DUNG CHÍNH
+     ========================================================= -->
+<main class="main-content">
+    <header class="top-header">
+        <div>
+            <h1>QUẢN LÝ VI PHẠM AN TOÀN LAO ĐỘNG</h1>
+            <p>Theo dõi, xử lý và lập biên bản vi phạm</p>
+        </div>
+        <div class="vibacon-box">
+            <span class="vibacon-text">VIBACON</span>
+        </div>
+    </header>
+    <!-- =====================================================
+         3. THỐNG KÊ
+         ===================================================== -->
+    <section class="dashboard-cards">
+        <div class="stat-card">
+            <div class="stat-icon">⚠️</div>
+            <div>
+                <p>Tổng vi phạm hôm nay</p>
+                <h2>{{ stats.tong_vi_pham }}</h2>
+            </div></div>
+        <div class="stat-card">
+            <div class="stat-icon">🕒</div>
+            <div>
+                <p>Chưa xử lý</p>
+                <h2>{{ stats.chua_xu_ly }}</h2>
+            </div></div>
+        <div class="stat-card">
+            <div class="stat-icon">✅</div>
+            <div>
+                <p>Đã xử lý</p>
+                <h2>{{ stats.da_xu_ly }}</h2>
+            </div></div>
+        <div class="stat-card">
+            <div class="stat-icon">🚨</div>
+            <div>
+                <p>Vi phạm nghiêm trọng</p>
+                <h2>{{ stats.nghiem_trong }}</h2>
+            </div></div>
+    </section>
+    <!-- =====================================================
+         4. DANH SÁCH VI PHẠM
+         ===================================================== -->
+    <section class="panel violation-panel">
+        <div class="panel-header violation-header">
+            <div>
+                <h2>DANH SÁCH VI PHẠM</h2>
+                <p>Theo dõi các trường hợp vi phạm an toàn lao động</p>
+            </div>
+            <form method="GET"
+                  action="{{ url_for('vi_pham.danh_sach_vi_pham') }}"
+                  class="date-form">
+                <input type="date"
+                       name="ngay"
+                       value="{{ ngay_chon }}"
+                       onchange="this.form.submit()">
+            </form>
+        </div>
+        <div class="violation-actions">
+            <button type="button"
+                    class="add-violation-button"
+                    onclick="openViolationModal()">
+                + Ghi nhận vi phạm
+            </button>
+        </div>
+        <!-- =================================================
+             TÌM KIẾM
+             ================================================= -->
+        <div class="worker-filter violation-filter">
+            <div class="worker-search-main">
+                <span class="search-icon">🔎</span>
+                <input type="text"
+                       id="violationSearch"
+                       placeholder="Tìm theo mã hoặc tên công nhân..."
+                       oninput="filterViolations()">
+            </div>
+            <select id="violationStatusFilter"
+                    onchange="filterViolations()">
+                <option value="all">Tất cả trạng thái</option>
+                <option value="Chưa xử lý">Chưa xử lý</option>
+                <option value="Đã xử lý">Đã xử lý</option>
+            </select>
+        </div>
+        <!-- =================================================
+             BẢNG VI PHẠM
+             ================================================= -->
+        <div class="daily-table-wrapper">
+            <table class="daily-check-table violation-table">
+                <thead>
+                    <tr>
+                        <th>STT</th>
+                        <th>Mã CN</th>
+                        <th>Họ và tên</th>
+                        <th>Bộ phận</th>
+                        <th>Công việc</th>
+                        <th>Nội dung vi phạm</th>
+                        <th>Mức độ</th>
+                        <th>Thời gian</th>
+                        <th>Trạng thái</th>
+                        <th>Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody id="violationTableBody">
+                    {% for item in violations %}
+                    <tr class="violation-row"
+                        data-search="{{ item.ma_cn }} {{ item.ho_ten or '' }}"
+                        data-status="{{ item.trang_thai }}">
+                        <td>{{ loop.index }}</td>
+                        <td>
+                            <span class="worker-code">{{ item.ma_cn }}</span>
+                        </td>
+                        <td>
+                            <strong>{{ item.ho_ten or '-' }}</strong>
+                        </td>
+                        <td>{{ item.bo_phan or '-' }}</td>
+                        <td>{{ item.cong_viec or '-' }}</td>
+                        <td class="violation-content">
+                            {{ item.noi_dung }}
+                        </td>
+                        <td>
+                            {% if item.muc_do == 'Cao' %}
+                            <span class="violation-level level-high">
+                                Cao
+                            </span>
+                            {% elif item.muc_do == 'Trung bình' %}
+                            <span class="violation-level level-medium">
+                                Trung bình
+                            </span>
+                            {% else %}
+                            <span class="violation-level level-low">
+                                {{ item.muc_do }}
+                            </span>
+                            {% endif %}
+                        </td>
+                        <td>{{ item.thoi_gian or '-' }}</td>
+                        <td>
+                            {% if item.trang_thai == 'Đã xử lý' %}
+                            <span class="status-badge status-pass">
+                                ✓ Đã xử lý
+                            </span>
+                            {% else %}
+                            <span class="status-badge status-pending">
+                                Chưa xử lý
+                            </span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div class="violation-row-actions">
+                                <button type="button"
+                                        class="violation-detail-button"
+                                        onclick='openDetailModal(
+                                            {{ item.id }},
+                                            {{ item.ma_cn|tojson }},
+                                            {{ (item.ho_ten or "-")|tojson }},
+                                            {{ (item.bo_phan or "-")|tojson }},
+                                            {{ (item.cong_viec or "-")|tojson }},
+                                            {{ item.ngay_vi_pham|tojson }},
+                                            {{ (item.thoi_gian or "-")|tojson }},
+                                            {{ item.noi_dung|tojson }},
+                                            {{ item.muc_do|tojson }},
+                                            {{ item.trang_thai|tojson }},
+                                            {{ (item.hinh_thuc_xu_ly or "")|tojson }},
+                                            {{ (item.so_tien_phat or 0)|tojson }},
+                                            {{ (item.nguoi_lap or "-")|tojson }},
+                                            {{ (item.ghi_chu or "")|tojson }}
+                                        )'>
+                                    👁 Chi tiết
+                                </button>
+                                <a href="{{ url_for('vi_pham.bien_ban_vi_pham', vi_pham_id=item.id) }}"
+                                   class="violation-document-button"
+                                   target="_blank">
+                                    📄 Xuất biên bản
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="10"
+                            class="empty-table">
+                            Chưa có vi phạm trong ngày được chọn.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+</main>
+<!-- =========================================================
+     5. MODAL GHI NHẬN VI PHẠM
+     ========================================================= -->
+<div id="violationModal"
+     class="inspection-modal">
+    <div class="inspection-modal-box">
+        <div class="modal-header">
+            <div>
+                <h2>Ghi nhận vi phạm</h2>
+                <p>Nhập thông tin vi phạm an toàn lao động</p>
+            </div>
+            <button type="button"
+                    class="modal-close"
+                    onclick="closeViolationModal()">
+                ×
+            </button>
+        </div>
+        <form action="{{ url_for('vi_pham.them_vi_pham') }}"
+              method="POST">
+            <input type="hidden"
+                   name="ngay_vi_pham"
+                   value="{{ ngay_chon }}">
+            <div class="modal-form-group">
+                <label>Công nhân vi phạm</label>
+                <select name="ma_cn"
+                        id="violationWorker"
+                        required>
+                    <option value="">
+                        -- Chọn công nhân --
+                    </option>
+                    {% for worker in workers %}
+                    <option value="{{ worker.ma_cn }}">
+                        {{ worker.ma_cn }} - {{ worker.ho_ten }} - {{ worker.bo_phan or 'Chưa có bộ phận' }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="modal-form-group">
+                <label>Nội dung vi phạm</label>
+                <textarea name="noi_dung"
+                          id="violationContent"
+                          placeholder="Ví dụ: Không đội mũ bảo hộ khi làm việc tại tầng 3..."
+                          required></textarea>
+            </div>
+            <div class="modal-ppe-grid">
+                <div class="modal-ppe-item">
+                    <label>Mức độ</label>
+                    <select name="muc_do"
+                            id="violationLevel">
+                        <option value="Thấp">
+                            Thấp
+                        </option>
+                        <option value="Trung bình"
+                                selected>
+                            Trung bình
+                        </option>
+                        <option value="Cao">
+                            Cao
+                        </option>
+                    </select>
+                </div>
+                <div class="modal-ppe-item">
+                    <label>Thời gian</label>
+                    <input type="time"
+                           name="thoi_gian"
+                           id="violationTime">
+                </div>
+            </div>
+            <div class="modal-form-group">
+                <label>Người lập</label>
+                <input type="text"
+                       name="nguoi_lap"
+                       id="violationCreator"
+                       value="Giám sát"
+                       required>
+            </div>
+            <div class="modal-form-group">
+                <label>Ghi chú</label>
+                <textarea name="ghi_chu"
+                          id="violationNote"
+                          placeholder="Nhập ghi chú nếu có..."></textarea>
+            </div>
+            <div class="modal-actions">
+                <button type="button"
+                        class="modal-cancel-button"
+                        onclick="closeViolationModal()">
+                    Hủy
+                </button>
+                <button type="submit"
+                        class="modal-save-button">
+                    ✓ Lưu vi phạm
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+<!-- =========================================================
+     6. MODAL CHI TIẾT / XỬ LÝ VI PHẠM
+     ========================================================= -->
+<div id="detailViolationModal"
+     class="inspection-modal">
+    <div class="inspection-modal-box">
+        <div class="modal-header">
+            <div>
+                <h2>CHI TIẾT VI PHẠM</h2>
+                <p id="detailWorkerTitle">
+                    Thông tin công nhân vi phạm
+                </p>
+            </div>
+            <button type="button"
+                    class="modal-close"
+                    onclick="closeDetailModal()">
+                ×
+            </button>
+        </div>
+        <form id="detailViolationForm"
+              method="POST">
+            <input type="hidden"
+                   name="ngay_vi_pham"
+                   id="detailNgayHidden"
+                   value="{{ ngay_chon }}">
+            <div class="modal-ppe-grid">
+                <div class="modal-ppe-item">
+                    <label>Mã công nhân</label>
+                    <input type="text"
+                           id="detailMaCn"
+                           readonly>
+                </div>
+                <div class="modal-ppe-item">
+                    <label>Họ và tên</label>
+                    <input type="text"
+                           id="detailHoTen"
+                           readonly>
+                </div>
+                <div class="modal-ppe-item">
+                    <label>Bộ phận</label>
+                    <input type="text"
+                           id="detailBoPhan"
+                           readonly>
+                </div>
+                <div class="modal-ppe-item">
+                    <label>Công việc</label>
+                    <input type="text"
+                           id="detailCongViec"
+                           readonly>
+                </div>
+            </div>
+            <div class="modal-ppe-grid">
+                <div class="modal-ppe-item">
+                    <label>Ngày vi phạm</label>
+                    <input type="text"
+                           id="detailNgay"
+                           readonly>
+                </div>
+                <div class="modal-ppe-item">
+                    <label>Thời gian</label>
+                    <input type="text"
+                           id="detailThoiGian"
+                           readonly>
+                </div>
+            </div>
+            <div class="modal-form-group">
+                <label>Nội dung vi phạm</label>
+                <textarea id="detailNoiDung"
+                          readonly></textarea>
+            </div>
+            <div class="modal-ppe-grid">
+                <div class="modal-ppe-item">
+                    <label>Mức độ</label>
+                    <select name="muc_do"
+                            id="detailMucDo">
+                        <option value="Thấp">Thấp</option>
+                        <option value="Trung bình">Trung bình</option>
+                        <option value="Cao">Cao</option>
+                    </select>
+                </div>
+                <div class="modal-ppe-item">
+                    <label>Người lập</label>
+                    <input type="text"
+                           id="detailNguoiLap"
+                           readonly>
+                </div>
+            </div>
+            <!-- =============================================
+                 XỬ LÝ
+                 ============================================= -->
+            <div class="modal-form-group">
+                <label>Hình thức xử lý</label>
+                <select name="hinh_thuc_xu_ly"
+                        id="detailHinhThucXuLy">
+                    <option value="">
+                        -- Chưa chọn --
+                    </option>
+                    <option value="Nhắc nhở">
+                        Nhắc nhở
+                    </option>
+                    <option value="Cảnh cáo">
+                        Cảnh cáo
+                    </option>
+                    <option value="Đình chỉ công việc">
+                        Đình chỉ công việc
+                    </option>
+                    <option value="Phạt tiền">
+                        Phạt tiền
+                    </option>
+                    <option value="Khác">
+                        Khác
+                    </option>
+                </select>
+            </div>
+            <!-- =============================================
+                 TIỀN PHẠT VND
+                 ============================================= -->
+            <div class="modal-form-group">
+                <label>Số tiền phạt</label>
+                <div style="display:flex; align-items:center; gap:10px;">
+                    <input type="number"
+                           name="so_tien_phat"
+                           id="detailSoTienPhat"
+                           min="0"
+                           step="any"
+                           value="0"
+                           placeholder="Nhập số tiền"
+                           style="flex:1;">
+                    <strong>VND</strong>
+                </div>
+            </div>
+            <div class="modal-form-group">
+                <label>Ghi chú / Nội dung xử lý</label>
+                <textarea name="ghi_chu"
+                          id="detailGhiChu"
+                          placeholder="Nhập nội dung xử lý hoặc ghi chú..."></textarea>
+            </div>
+            <div class="modal-form-group">
+                <label>Trạng thái xử lý</label>
+                <select name="trang_thai"
+                        id="detailTrangThai">
+                    <option value="Chưa xử lý">
+                        Chưa xử lý
+                    </option>
+                    <option value="Đã xử lý">
+                        Đã xử lý
+                    </option>
+                </select>
+            </div>
+            <div class="modal-actions">
+                <button type="button"
+                        class="modal-cancel-button"
+                        onclick="closeDetailModal()">
+                    Đóng
+                </button>
+                <button type="submit"
+                        class="modal-save-button">
+                    ✓ Lưu xử lý
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+<!-- =========================================================
+     7. JAVASCRIPT
+     ========================================================= -->
+<script>
+function filterViolations() {
+    const keyword =
+        document
+            .getElementById("violationSearch")
+            .value
+            .trim()
+            .toLowerCase();
+    const status =
+        document
+            .getElementById("violationStatusFilter")
+            .value;
+    const rows =
+        document.querySelectorAll(".violation-row");
+    rows.forEach(function (row) {
+        const text =
+            row.dataset.search.toLowerCase();
+        const rowStatus =
+            row.dataset.status.trim();
+        const matchKeyword =
+            text.includes(keyword);
+        const matchStatus =
+            status === "all" ||
+            rowStatus === status;
+        row.style.display =
+            matchKeyword && matchStatus
+            ? ""
+            : "none";
+    });
+}
+function openViolationModal() {
+    document
+        .getElementById("violationModal")
+        .classList.add("show");
+    document.body.classList.add(
+        "modal-open"
+    );
+}
+function closeViolationModal() {
+    document
+        .getElementById("violationModal")
+        .classList.remove("show");
+    document.body.classList.remove(
+        "modal-open"
+    );
+}
+function openDetailModal(
+    id,
+    maCn,
+    hoTen,
+    boPhan,
+    congViec,
+    ngay,
+    thoiGian,
+    noiDung,
+    mucDo,
+    trangThai,
+    hinhThucXuLy,
+    soTienPhat,
+    nguoiLap,
+    ghiChu
+) {
+    const form =
+        document.getElementById(
+            "detailViolationForm"
+        );
+    form.action =
+        "/xu-ly-vi-pham/" + id;
+    document.getElementById(
+        "detailWorkerTitle"
+    ).textContent =
+        maCn + " - " + hoTen;
+    document.getElementById(
+        "detailMaCn"
+    ).value = maCn;
+    document.getElementById(
+        "detailHoTen"
+    ).value = hoTen;
+    document.getElementById(
+        "detailBoPhan"
+    ).value = boPhan;
+    document.getElementById(
+        "detailCongViec"
+    ).value = congViec;
+    document.getElementById(
+        "detailNgay"
+    ).value = ngay;
+    document.getElementById(
+        "detailNgayHidden"
+    ).value = ngay;
+    document.getElementById(
+        "detailThoiGian"
+    ).value = thoiGian;
+    document.getElementById(
+        "detailNoiDung"
+    ).value = noiDung;
+    document.getElementById(
+        "detailMucDo"
+    ).value = mucDo;
+    document.getElementById(
+        "detailTrangThai"
+    ).value = trangThai;
+    document.getElementById(
+        "detailHinhThucXuLy"
+    ).value = hinhThucXuLy || "";
+    document.getElementById(
+        "detailSoTienPhat"
+    ).value = soTienPhat || 0;
+    document.getElementById(
+        "detailNguoiLap"
+    ).value = nguoiLap;
+    document.getElementById(
+        "detailGhiChu"
+    ).value = ghiChu || "";
+    document
+        .getElementById(
+            "detailViolationModal"
+        )
+        .classList.add("show");
+    document.body.classList.add(
+        "modal-open"
+    );
+}
+function closeDetailModal() {
+    document
+        .getElementById(
+            "detailViolationModal"
+        )
+        .classList.remove("show");
+    document.body.classList.remove(
+        "modal-open"
+    );
+}
+document
+    .getElementById("violationModal")
+    .addEventListener(
+        "click",
+        function (event) {
+            if (event.target === this) {
+                closeViolationModal();
+            }});
+document
+    .getElementById(
+        "detailViolationModal"
+    )
+    .addEventListener(
+        "click",
+        function (event) {
+            if (event.target === this) {
+                closeDetailModal();
+            }});
+document.addEventListener(
+    "keydown",
+    function (event) {
+        if (event.key === "Escape") {
+            closeViolationModal();
+            closeDetailModal();
+        }});
+</script>
+</body>
+</html>

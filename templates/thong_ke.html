@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thống kê | ATLD</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .statistics-content {
+            width: 100%;
+        }
+        .statistics-period {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 11px 16px;
+            border: 1px solid #dbe3ea;
+            border-radius: 10px;
+            background: #ffffff;
+            color: #475569;
+            font-size: 14px;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+        .statistics-filter {
+            background: #ffffff;
+            border-radius: 16px;
+            padding: 20px 28px;
+            margin-bottom: 28px;
+            box-shadow: 0 4px 18px rgba(15, 23, 42, 0.05);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        .statistics-filter-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .statistics-filter-tab {
+            min-width: 100px;
+            height: 48px;
+            padding: 0 22px;
+            border: 1px solid #d8e0e7;
+            border-radius: 9px;
+            background: #f8fafc;
+            color: #334155;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .statistics-filter-tab:hover {
+            background: #edf2f5;
+        }
+        .statistics-filter-tab.active {
+            background: #4f6977;
+            border-color: #4f6977;
+            color: #ffffff;
+        }
+        .statistics-filter-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        .statistics-filter-right label {
+            color: #64748b;
+            font-size: 14px;
+            font-weight: 700;
+        }
+        .statistics-time-input {
+            height: 48px;
+            min-width: 230px;
+            padding: 0 14px;
+            border: 1px solid #cbd5e1;
+            border-radius: 9px;
+            background: #ffffff;
+            color: #1e293b;
+            font-size: 15px;
+            outline: none;
+        }
+        .statistics-time-input:focus {
+            border-color: #647f8e;
+            box-shadow: 0 0 0 3px rgba(100, 127, 142, 0.12);
+        }
+        .statistics-apply-button {
+            height: 48px;
+            padding: 0 24px;
+            border: none;
+            border-radius: 9px;
+            background: #243943;
+            color: #ffffff;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+        .statistics-apply-button:hover {
+            background: #314b58;
+        }
+        .statistics-cards {
+            display: grid;
+            grid-template-columns: repeat(5, minmax(0, 1fr));
+            gap: 22px;
+            margin-bottom: 28px;
+        }
+        .statistics-card {
+            background: #ffffff;
+            border-radius: 16px;
+            min-height: 145px;
+            padding: 24px;
+            box-shadow: 0 4px 18px rgba(15, 23, 42, 0.05);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        .statistics-card-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+        }
+        .statistics-card-label {
+            color: #64748b;
+            font-size: 13px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+        .statistics-card-icon {
+            width: 52px;
+            height: 52px;
+            border-radius: 11px;
+            background: #f0f3f5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+        .statistics-card h2 {
+            margin: 13px 0 4px;
+            color: #1e293b;
+            font-size: 31px;
+            line-height: 1;
+        }
+        .statistics-card p {
+            margin: 0;
+            color: #64748b;
+            font-size: 14px;
+        }
+        .statistics-chart-grid-main {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+        .statistics-chart-grid-secondary {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+        .statistics-chart-card,
+        .statistics-table-card {
+            background: #ffffff;
+            border-radius: 16px;
+            padding: 26px 28px;
+            box-shadow: 0 4px 18px rgba(15, 23, 42, 0.05);
+        }
+        .statistics-chart-header {
+            margin-bottom: 20px;
+        }
+        .statistics-chart-header h2 {
+            margin: 0 0 6px;
+            color: #1e293b;
+            font-size: 20px;
+        }
+        .statistics-chart-header p {
+            margin: 0;
+            color: #64748b;
+            font-size: 14px;
+        }
+        .statistics-chart-box {
+            position: relative;
+            width: 100%;
+            height: 330px;
+        }
+        .statistics-chart-box.small {
+            height: 310px;
+        }
+        .statistics-detail-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-bottom: 30px;
+        }
+        .statistics-table-card h2 {
+            margin: 0 0 6px;
+            color: #1e293b;
+            font-size: 20px;
+        }
+        .statistics-table-subtitle {
+            margin-bottom: 18px;
+            color: #64748b;
+            font-size: 14px;
+        }
+        .statistics-table-wrapper {
+            width: 100%;
+            overflow-x: auto;
+        }
+        .statistics-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .statistics-table th {
+            padding: 13px 12px;
+            background: #f1f4f6;
+            color: #475569;
+            font-size: 12px;
+            font-weight: 700;
+            text-align: left;
+            border-bottom: 1px solid #dce3e8;
+            white-space: nowrap;
+        }
+        .statistics-table td {
+            padding: 14px 12px;
+            color: #334155;
+            font-size: 13px;
+            border-bottom: 1px solid #edf1f4;
+        }
+        .statistics-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+        .statistics-number-badge {
+            display: inline-flex;
+            min-width: 34px;
+            height: 28px;
+            padding: 0 9px;
+            align-items: center;
+            justify-content: center;
+            border-radius: 7px;
+            background: #e8eef1;
+            color: #334e5b;
+            font-weight: 700;
+        }
+        .statistics-empty {
+            padding: 30px !important;
+            text-align: center;
+            color: #94a3b8 !important;
+        }
+        @media (max-width: 1400px) {
+            .statistics-cards {
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+            }
+        }
+        @media (max-width: 1100px) {
+            .statistics-cards {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+            .statistics-chart-grid-main,
+            .statistics-chart-grid-secondary,
+            .statistics-detail-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        @media (max-width: 750px) {
+            .statistics-cards {
+                grid-template-columns: 1fr;
+            }
+            .statistics-filter {
+                align-items: stretch;
+            }
+            .statistics-filter-left,
+            .statistics-filter-right {
+                width: 100%;
+            }
+            .statistics-time-input {
+                flex: 1;
+                min-width: 160px;
+            }
+        }
+    </style>
+</head>
+<body>
+<aside class="sidebar">
+    <div class="logo">
+        <h2>ATLD</h2>
+        <p>AN TOÀN LAO ĐỘNG</p>
+    </div>
+    <nav>
+        <a href="/" class="menu-item">
+            🏠
+            <span>Trang chủ</span>
+        </a>
+        <a href="/cong-nhan" class="menu-item">
+            👷
+            <span>Công nhân</span>
+        </a>
+        <a href="{{ url_for('bao_ho.kiem_tra_bao_ho') }}" class="menu-item">
+            🦺
+            <span>Kiểm tra bảo hộ</span>
+        </a>
+        <a href="{{ url_for('vi_pham.danh_sach_vi_pham') }}" class="menu-item">
+            ⚠️
+            <span>Vi phạm</span>
+        </a>
+        <a href="{{ url_for('nguy_co.danh_sach_nguy_co') }}" class="menu-item">
+            🚧
+            <span>Nguy cơ</span>
+        </a>
+        <a href="{{ url_for('thong_ke.thong_ke') }}" class="menu-item active">
+            📊
+            <span>Thống kê</span>
+        </a>
+        <a href="{{ url_for('bao_cao.bao_cao') }}" class="menu-item">
+            📄
+            <span>Báo cáo</span>
+        </a>
+    </nav>
+</aside>
+<main class="main-content">
+    <header class="top-header">
+        <div>
+            <h1>THỐNG KÊ AN TOÀN LAO ĐỘNG</h1>
+            <p>Tổng hợp và phân tích dữ liệu an toàn công trường</p>
+        </div>
+        <div class="vibacon-box">
+            <span class="vibacon-text">VIBACON</span>
+        </div>
+    </header>
+    <div class="statistics-content">
+        <form method="GET"
+              action="{{ url_for('thong_ke.thong_ke') }}"
+              id="filterForm"
+              class="statistics-filter">
+            <input type="hidden"
+                   name="che_do"
+                   id="cheDoInput"
+                   value="{{ che_do }}">
+            <div class="statistics-filter-left">
+                <button type="button"
+                        class="statistics-filter-tab {% if che_do == 'ngay' %}active{% endif %}"
+                        onclick="changeMode('ngay')">
+                    Ngày
+                </button>
+                <button type="button"
+                        class="statistics-filter-tab {% if che_do == 'tuan' %}active{% endif %}"
+                        onclick="changeMode('tuan')">
+                    Tuần
+                </button>
+                <button type="button"
+                        class="statistics-filter-tab {% if che_do == 'thang' %}active{% endif %}"
+                        onclick="changeMode('thang')">
+                    Tháng
+                </button>
+                <button type="button"
+                        class="statistics-filter-tab {% if che_do == 'nam' %}active{% endif %}"
+                        onclick="changeMode('nam')">
+                    Năm
+                </button>
+            </div>
+            <div class="statistics-filter-right">
+                <div class="statistics-period">
+                    📅 {{ khoang_thoi_gian }}
+                </div>
+                <label for="timeInput">Thời gian:</label>
+                {% if che_do == 'ngay' %}
+                <input type="date"
+                       id="timeInput"
+                       name="thoi_gian"
+                       value="{{ thoi_gian }}"
+                       class="statistics-time-input">
+                {% elif che_do == 'tuan' %}
+                <input type="date"
+                       id="timeInput"
+                       name="thoi_gian"
+                       value="{{ thoi_gian }}"
+                       class="statistics-time-input">
+                {% elif che_do == 'thang' %}
+                <input type="month"
+                       id="timeInput"
+                       name="thoi_gian"
+                       value="{{ thoi_gian }}"
+                       class="statistics-time-input">
+                {% else %}
+                <input type="number"
+                       id="timeInput"
+                       name="thoi_gian"
+                       value="{{ thoi_gian }}"
+                       min="2020"
+                       max="2100"
+                       class="statistics-time-input">
+                {% endif %}
+                <button type="submit"
+                        class="statistics-apply-button">
+                    Áp dụng
+                </button>
+            </div>
+        </form>
+        <section class="statistics-cards">
+            <div class="statistics-card">
+                <div class="statistics-card-top">
+                    <span class="statistics-card-label">Công nhân</span>
+                    <div class="statistics-card-icon">👷</div>
+                </div>
+                <div>
+                    <h2>{{ stats.tong_cong_nhan }}</h2>
+                    <p>{{ stats.cong_nhan_dang_lam }} đang làm việc</p>
+                </div>
+            </div>
+            <div class="statistics-card">
+                <div class="statistics-card-top">
+                    <span class="statistics-card-label">Kiểm tra BHLĐ</span>
+                    <div class="statistics-card-icon">🦺</div>
+                </div>
+                <div>
+                    <h2>{{ stats.da_kiem_tra }}</h2>
+                    <p>
+                        {{ stats.bao_ho_dat }} đạt ·
+                        {{ stats.bao_ho_khong_dat }} không đạt
+                    </p>
+                </div>
+            </div>
+            <div class="statistics-card">
+                <div class="statistics-card-top">
+                    <span class="statistics-card-label">Vi phạm</span>
+                    <div class="statistics-card-icon">⚠️</div>
+                </div>
+                <div>
+                    <h2>{{ stats.tong_vi_pham }}</h2>
+                    <p>{{ stats.vi_pham_chua_xu_ly }} chưa xử lý</p>
+                </div>
+            </div>
+            <div class="statistics-card">
+                <div class="statistics-card-top">
+                    <span class="statistics-card-label">Nguy cơ</span>
+                    <div class="statistics-card-icon">🚧</div>
+                </div>
+                <div>
+                    <h2>{{ stats.tong_nguy_co }}</h2>
+                    <p>{{ stats.nguy_co_da_xu_ly }} đã xử lý</p>
+                </div>
+            </div>
+            <div class="statistics-card">
+                <div class="statistics-card-top">
+                    <span class="statistics-card-label">Nguy cơ cao</span>
+                    <div class="statistics-card-icon">🚨</div>
+                </div>
+                <div>
+                    <h2>{{ stats.nguy_co_cao }}</h2>
+                    <p>{{ stats.ty_le_nguy_co_da_xu_ly }}% nguy cơ đã xử lý</p>
+                </div>
+            </div>
+        </section>
+        <section class="statistics-chart-grid-main">
+            <div class="statistics-chart-card">
+                <div class="statistics-chart-header">
+                    <h2>Xu hướng vi phạm và nguy cơ</h2>
+                    <p>So sánh số lượng phát sinh trong khoảng thời gian đã chọn</p>
+                </div>
+                <div class="statistics-chart-box">
+                    <canvas id="trendChart"></canvas>
+                </div>
+            </div>
+            <div class="statistics-chart-card">
+                <div class="statistics-chart-header">
+                    <h2>Tình trạng xử lý nguy cơ</h2>
+                    <p>Phân bố trạng thái xử lý nguy cơ</p>
+                </div>
+                <div class="statistics-chart-box small">
+                    <canvas id="riskStatusChart"></canvas>
+                </div>
+            </div>
+        </section>
+        <section class="statistics-chart-grid-secondary">
+            <div class="statistics-chart-card">
+                <div class="statistics-chart-header">
+                    <h2>Vi phạm theo loại</h2>
+                    <p>Các nội dung vi phạm xuất hiện nhiều nhất</p>
+                </div>
+                <div class="statistics-chart-box small">
+                    <canvas id="violationChart"></canvas>
+                </div>
+            </div>
+            <div class="statistics-chart-card">
+                <div class="statistics-chart-header">
+                    <h2>Nguy cơ theo loại</h2>
+                    <p>Các nhóm nguy cơ được ghi nhận nhiều nhất</p>
+                </div>
+                <div class="statistics-chart-box small">
+                    <canvas id="riskTypeChart"></canvas>
+                </div>
+            </div>
+        </section>
+        <section class="statistics-detail-grid">
+            <div class="statistics-table-card">
+                <h2>Top 5 công nhân có nhiều vi phạm</h2>
+                <div class="statistics-table-subtitle">
+                    Trong khoảng {{ khoang_thoi_gian }}
+                </div>
+                <div class="statistics-table-wrapper">
+                    <table class="statistics-table">
+                        <thead>
+                            <tr>
+                                <th>MÃ CN</th>
+                                <th>HỌ VÀ TÊN</th>
+                                <th>BỘ PHẬN</th>
+                                <th>SỐ VP</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% if top_vi_pham %}
+                            {% for item in top_vi_pham %}
+                            <tr>
+                                <td>{{ item.ma_cn }}</td>
+                                <td>{{ item.ho_ten }}</td>
+                                <td>{{ item.bo_phan }}</td>
+                                <td>
+                                    <span class="statistics-number-badge">
+                                        {{ item.so_luong }}
+                                    </span>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                            {% else %}
+                            <tr>
+                                <td colspan="4"
+                                    class="statistics-empty">
+                                    Chưa có dữ liệu vi phạm
+                                </td>
+                            </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="statistics-table-card">
+                <h2>Top 5 loại nguy cơ</h2>
+                <div class="statistics-table-subtitle">
+                    Trong khoảng {{ khoang_thoi_gian }}
+                </div>
+                <div class="statistics-table-wrapper">
+                    <table class="statistics-table">
+                        <thead>
+                            <tr>
+                                <th>STT</th>
+                                <th>LOẠI NGUY CƠ</th>
+                                <th>SỐ LƯỢNG</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% if top_nguy_co %}
+                            {% for item in top_nguy_co %}
+                            <tr>
+                                <td>{{ loop.index }}</td>
+                                <td>{{ item.loai_nguy_co }}</td>
+                                <td>
+                                    <span class="statistics-number-badge">
+                                        {{ item.so_luong }}
+                                    </span>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                            {% else %}
+                            <tr>
+                                <td colspan="3"
+                                    class="statistics-empty">
+                                    Chưa có dữ liệu nguy cơ
+                                </td>
+                            </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+    </div>
+</main>
+<script>
+const trendLabels = {{ charts.xu_huong_labels | tojson }};
+const trendViolations = {{ charts.xu_huong_vi_pham | tojson }};
+const trendRisks = {{ charts.xu_huong_nguy_co | tojson }};
+const riskStatusLabels = {{ charts.trang_thai_nguy_co_labels | tojson }};
+const riskStatusValues = {{ charts.trang_thai_nguy_co_values | tojson }};
+const violationLabels = {{ charts.vi_pham_labels | tojson }};
+const violationValues = {{ charts.vi_pham_values | tojson }};
+const riskTypeLabels = {{ charts.nguy_co_labels | tojson }};
+const riskTypeValues = {{ charts.nguy_co_values | tojson }};
+function changeMode(mode) {
+    document.getElementById("cheDoInput").value = mode;
+    const form = document.getElementById("filterForm");
+    const oldInput = document.getElementById("timeInput");
+    if (oldInput) {
+        oldInput.removeAttribute("name");
+    }
+    form.submit();
+}
+new Chart(
+    document.getElementById("trendChart"),
+    {
+        type: "line",
+        data: {
+            labels: trendLabels,
+            datasets: [
+                {
+                    label: "Vi phạm",
+                    data: trendViolations,
+                    borderColor: "#ef4444",
+                    backgroundColor: "rgba(239,68,68,0.10)",
+                    borderWidth: 3,
+                    tension: 0.35,
+                    pointRadius: 4,
+                    pointHoverRadius: 6,
+                    fill: false
+                },
+                {
+                    label: "Nguy cơ",
+                    data: trendRisks,
+                    borderColor: "#f59e0b",
+                    backgroundColor: "rgba(245,158,11,0.10)",
+                    borderWidth: 3,
+                    tension: 0.35,
+                    pointRadius: 4,
+                    pointHoverRadius: 6,
+                    fill: false
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            interaction: {
+                mode: "index",
+                intersect: false
+            },
+            plugins: {
+                legend: {
+                    position: "top"
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        precision: 0
+                    }
+                },
+                x: {
+                    grid: {
+                        display: false
+                    }
+                }
+            }
+        }
+    }
+);
+new Chart(
+    document.getElementById("riskStatusChart"),
+    {
+        type: "doughnut",
+        data: {
+            labels: riskStatusLabels,
+            datasets: [
+                {
+                    data: riskStatusValues,
+                    backgroundColor: [
+                        "#ef4444",
+                        "#f59e0b",
+                        "#22c55e"
+                    ],
+                    borderWidth: 3,
+                    borderColor: "#ffffff"
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            cutout: "64%",
+            plugins: {
+                legend: {
+                    position: "bottom"
+                }
+            }
+        }
+    }
+);
+new Chart(
+    document.getElementById("violationChart"),
+    {
+        type: "bar",
+        data: {
+            labels: violationLabels,
+            datasets: [
+                {
+                    label: "Số vi phạm",
+                    data: violationValues,
+                    backgroundColor: "#ef4444",
+                    borderRadius: 6
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            indexAxis: "y",
+            plugins: {
+                legend: {
+                    display: false
+                }
+            },
+            scales: {
+                x: {
+                    beginAtZero: true,
+                    ticks: {
+                        precision: 0
+                    }
+                },
+                y: {
+                    grid: {
+                        display: false
+                    }
+                }
+            }
+        }
+    }
+);
+new Chart(
+    document.getElementById("riskTypeChart"),
+    {
+        type: "bar",
+        data: {
+            labels: riskTypeLabels,
+            datasets: [
+                {
+                    label: "Số nguy cơ",
+                    data: riskTypeValues,
+                    backgroundColor: "#f59e0b",
+                    borderRadius: 6
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        precision: 0
+                    }
+                },
+                x: {
+                    grid: {
+                        display: false
+                    }
+                }
+            }
+        }
+    }
+);
+</script>
+</body>
+</html>
