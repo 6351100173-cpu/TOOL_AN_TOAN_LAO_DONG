@@ -1,57 +1,65 @@
-from flask import Blueprint, render_template, request, redirect
+# ============================================================
+# cong_nhan.py
+# MODULE QUẢN LÝ CÔNG NHÂN
+# ============================================================
+
+from flask import Blueprint, render_template, request, redirect, url_for
 import sqlite3
 import os
 
 
-# =========================================================
-# CẤU HÌNH
-# =========================================================
+# ============================================================
+# 1. KHỞI TẠO BLUEPRINT
+# ============================================================
 
-cong_nhan_bp = Blueprint("cong_nhan", __name__)
+cong_nhan_bp = Blueprint(
+    "cong_nhan",
+    __name__
+)
 
 
-# Database nằm cùng thư mục với ATLD.py
+# ============================================================
+# 2. CẤU HÌNH DATABASE
+# ============================================================
+
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DB_PATH = os.path.join(BASE_DIR, "atld.db")
 
 
-# =========================================================
-# KẾT NỐI DATABASE
-# =========================================================
-
 def get_db():
+    """
+    Tạo kết nối đến database chung của hệ thống.
+    """
 
     conn = sqlite3.connect(DB_PATH)
+
+    # Cho phép lấy dữ liệu theo tên cột.
+    conn.row_factory = sqlite3.Row
 
     return conn
 
 
-# =========================================================
-# TẠO BẢNG CÔNG NHÂN
-# =========================================================
+# ============================================================
+# 3. TẠO BẢNG CÔNG NHÂN
+# ============================================================
 
 def init_cong_nhan_db():
+    """
+    Tạo bảng cong_nhan nếu bảng chưa tồn tại.
+    """
 
     conn = get_db()
     cursor = conn.cursor()
 
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS cong_nhan (
-
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-
             ma_cn TEXT NOT NULL,
-
             ho_ten TEXT NOT NULL,
-
             bo_phan TEXT,
-
             cong_viec TEXT,
-
             so_dien_thoai TEXT,
-
-            trang_thai TEXT
-
+            trang_thai TEXT DEFAULT 'Đang làm việc'
         )
     """)
 
@@ -59,16 +67,25 @@ def init_cong_nhan_db():
     conn.close()
 
 
-# =========================================================
-# TẠO 200 CÔNG NHÂN MẪU
-# =========================================================
+# ============================================================
+# 4. TẠO 200 CÔNG NHÂN MẪU
+# ============================================================
 
 def tao_cong_nhan_mau():
+    """
+    Chỉ tạo 200 công nhân mẫu khi bảng công nhân chưa có dữ liệu.
+
+    Nếu database đã có công nhân thì không tạo lại,
+    tránh bị trùng dữ liệu mỗi lần chạy Flask.
+    """
 
     conn = get_db()
     cursor = conn.cursor()
 
-    # Kiểm tra database đã có công nhân chưa
+    # --------------------------------------------------------
+    # Kiểm tra dữ liệu hiện tại
+    # --------------------------------------------------------
+
     cursor.execute("""
         SELECT COUNT(*)
         FROM cong_nhan
@@ -76,9 +93,7 @@ def tao_cong_nhan_mau():
 
     so_luong = cursor.fetchone()[0]
 
-    # Nếu đã có dữ liệu thì KHÔNG tạo lại
     if so_luong > 0:
-
         conn.close()
 
         print(
@@ -87,12 +102,11 @@ def tao_cong_nhan_mau():
 
         return
 
+    # --------------------------------------------------------
+    # Danh sách dùng để tạo dữ liệu mẫu
+    # --------------------------------------------------------
 
-    # =====================================================
-    # DANH SÁCH HỌ
-    # =====================================================
-
-    ho = [
+    danh_sach_ho = [
         "Nguyễn",
         "Trần",
         "Lê",
@@ -115,12 +129,7 @@ def tao_cong_nhan_mau():
         "Đoàn"
     ]
 
-
-    # =====================================================
-    # TÊN ĐỆM
-    # =====================================================
-
-    ten_dem = [
+    danh_sach_ten_dem = [
         "Văn",
         "Minh",
         "Quốc",
@@ -133,12 +142,7 @@ def tao_cong_nhan_mau():
         "Hoàng"
     ]
 
-
-    # =====================================================
-    # TÊN
-    # =====================================================
-
-    ten = [
+    danh_sach_ten = [
         "An",
         "Anh",
         "Bình",
@@ -181,12 +185,7 @@ def tao_cong_nhan_mau():
         "Lộc"
     ]
 
-
-    # =====================================================
-    # BỘ PHẬN
-    # =====================================================
-
-    bo_phan_list = [
+    danh_sach_bo_phan = [
         "Kết cấu",
         "Xây dựng",
         "Cơ điện",
@@ -197,12 +196,7 @@ def tao_cong_nhan_mau():
         "Giám sát"
     ]
 
-
-    # =====================================================
-    # CÔNG VIỆC
-    # =====================================================
-
-    cong_viec_list = [
+    danh_sach_cong_viec = [
         "Thợ xây",
         "Thợ sắt",
         "Thợ cốp pha",
@@ -215,69 +209,75 @@ def tao_cong_nhan_mau():
         "Kỹ thuật viên"
     ]
 
-
-    # =====================================================
-    # TẠO 200 NGƯỜI
-    # =====================================================
+    # --------------------------------------------------------
+    # Tạo công nhân
+    # --------------------------------------------------------
 
     dem = 1
 
-    for h in ho:
+    for ho in danh_sach_ho:
 
-        for td in ten_dem:
+        for ten_dem in danh_sach_ten_dem:
 
-            for t in ten:
+            for ten in danh_sach_ten:
 
                 if dem > 200:
                     break
 
-                ho_ten = f"{h} {td} {t}"
-
                 ma_cn = f"CN{dem:03d}"
 
-                bo_phan = bo_phan_list[
-                    (dem - 1) % len(bo_phan_list)
+                ho_ten = (
+                    f"{ho} {ten_dem} {ten}"
+                )
+
+                bo_phan = danh_sach_bo_phan[
+                    (dem - 1) % len(danh_sach_bo_phan)
                 ]
 
-                cong_viec = cong_viec_list[
-                    (dem - 1) % len(cong_viec_list)
+                cong_viec = danh_sach_cong_viec[
+                    (dem - 1) % len(danh_sach_cong_viec)
                 ]
 
-                so_dien_thoai = f"09{dem:08d}"
+                so_dien_thoai = (
+                    f"09{dem:08d}"
+                )
 
                 trang_thai = "Đang làm việc"
 
-
                 cursor.execute("""
                     INSERT INTO cong_nhan (
-
                         ma_cn,
                         ho_ten,
                         bo_phan,
                         cong_viec,
                         so_dien_thoai,
                         trang_thai
-
                     )
-
                     VALUES (?, ?, ?, ?, ?, ?)
-
                 """, (
-
                     ma_cn,
                     ho_ten,
                     bo_phan,
                     cong_viec,
                     so_dien_thoai,
                     trang_thai
-
                 ))
 
                 dem += 1
 
+            # Đủ 200 người thì dừng
+            if dem > 200:
+                break
+
+        # Đủ 200 người thì dừng
+        if dem > 200:
+            break
 
     conn.commit()
 
+    # --------------------------------------------------------
+    # Kiểm tra số lượng sau khi tạo
+    # --------------------------------------------------------
 
     cursor.execute("""
         SELECT COUNT(*)
@@ -288,18 +288,20 @@ def tao_cong_nhan_mau():
 
     conn.close()
 
-
     print(
         f"Đã tạo {so_luong} công nhân mẫu."
     )
 
 
-# =========================================================
-# TRANG CÔNG NHÂN
-# =========================================================
+# ============================================================
+# 5. TRANG DANH SÁCH CÔNG NHÂN
+# ============================================================
 
 @cong_nhan_bp.route("/cong-nhan")
 def cong_nhan():
+    """
+    Hiển thị toàn bộ danh sách công nhân.
+    """
 
     conn = get_db()
     cursor = conn.cursor()
@@ -307,7 +309,7 @@ def cong_nhan():
     cursor.execute("""
         SELECT *
         FROM cong_nhan
-        ORDER BY id
+        ORDER BY id ASC
     """)
 
     workers = cursor.fetchall()
@@ -320,91 +322,140 @@ def cong_nhan():
     )
 
 
-# =========================================================
-# THÊM CÔNG NHÂN
-# =========================================================
+# ============================================================
+# 6. THÊM CÔNG NHÂN
+# ============================================================
 
 @cong_nhan_bp.route(
     "/them-cong-nhan",
     methods=["POST"]
 )
 def them_cong_nhan():
+    """
+    Thêm một công nhân mới vào hệ thống.
+    """
 
-    ma_cn = request.form.get("ma_cn")
-    ho_ten = request.form.get("ho_ten")
-    bo_phan = request.form.get("bo_phan")
-    cong_viec = request.form.get("cong_viec")
-    so_dien_thoai = request.form.get("so_dien_thoai")
-    trang_thai = request.form.get("trang_thai")
+    ma_cn = request.form.get(
+        "ma_cn",
+        ""
+    ).strip()
 
+    ho_ten = request.form.get(
+        "ho_ten",
+        ""
+    ).strip()
+
+    bo_phan = request.form.get(
+        "bo_phan",
+        ""
+    ).strip()
+
+    cong_viec = request.form.get(
+        "cong_viec",
+        ""
+    ).strip()
+
+    so_dien_thoai = request.form.get(
+        "so_dien_thoai",
+        ""
+    ).strip()
+
+    trang_thai = request.form.get(
+        "trang_thai",
+        "Đang làm việc"
+    ).strip()
+
+    # Không cho thêm nếu thiếu mã hoặc họ tên
+    if not ma_cn or not ho_ten:
+        return redirect(
+            url_for("cong_nhan.cong_nhan")
+        )
 
     conn = get_db()
     cursor = conn.cursor()
 
+    # --------------------------------------------------------
+    # Kiểm tra mã công nhân đã tồn tại chưa
+    # --------------------------------------------------------
+
+    cursor.execute("""
+        SELECT id
+        FROM cong_nhan
+        WHERE ma_cn = ?
+    """, (ma_cn,))
+
+    cong_nhan_da_co = cursor.fetchone()
+
+    if cong_nhan_da_co:
+        conn.close()
+
+        return redirect(
+            url_for("cong_nhan.cong_nhan")
+        )
+
+    # --------------------------------------------------------
+    # Thêm công nhân
+    # --------------------------------------------------------
 
     cursor.execute("""
         INSERT INTO cong_nhan (
-
             ma_cn,
             ho_ten,
             bo_phan,
             cong_viec,
             so_dien_thoai,
             trang_thai
-
         )
-
         VALUES (?, ?, ?, ?, ?, ?)
-
     """, (
-
         ma_cn,
         ho_ten,
         bo_phan,
         cong_viec,
         so_dien_thoai,
         trang_thai
-
     ))
-
 
     conn.commit()
     conn.close()
 
+    return redirect(
+        url_for("cong_nhan.cong_nhan")
+    )
 
-    return redirect("/cong-nhan")
 
-
-# =========================================================
-# XÓA CÔNG NHÂN
-# =========================================================
+# ============================================================
+# 7. XÓA CÔNG NHÂN
+# ============================================================
 
 @cong_nhan_bp.route(
     "/xoa-cong-nhan/<int:id>",
     methods=["POST"]
 )
 def xoa_cong_nhan(id):
+    """
+    Xóa một công nhân khỏi danh sách.
+    """
 
     conn = get_db()
     cursor = conn.cursor()
-
 
     cursor.execute("""
         DELETE FROM cong_nhan
         WHERE id = ?
     """, (id,))
 
-
     conn.commit()
     conn.close()
 
+    return redirect(
+        url_for("cong_nhan.cong_nhan")
+    )
 
-    return redirect("/cong-nhan")
 
-
-# =========================================================
-# KHỞI TẠO
-# =========================================================
+# ============================================================
+# 8. KHỞI TẠO DATABASE
+# ============================================================
 
 init_cong_nhan_db()
 
