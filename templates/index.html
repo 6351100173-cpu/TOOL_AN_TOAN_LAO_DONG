@@ -1,522 +1,472 @@
 <!DOCTYPE html>
-
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-```
-<title>Quản lý An toàn Công trường</title>
-
-<link rel="stylesheet"
-      href="{{ url_for('static', filename='style.css') }}">
-
-<style>
-    /* ===== VIBACON ===== */
-    .top-header {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 30px;
-    }
-
-    .vibacon-box {
-        width: 240px;
-        height: 70px;
-
-        display: flex;
-        align-items: center;
-        justify-content: center;
-
-        background: #ffffff;
-        border-radius: 14px;
-
-        box-shadow: 0 4px 14px rgba(0,0,0,0.08);
-
-        box-sizing: border-box;
-        flex-shrink: 0;
-    }
-
-    .vibacon-text {
-        display: inline-block;
-
-        font-family: Arial, Helvetica, sans-serif;
-        font-size: 38px;
-        font-weight: 900;
-        line-height: 1;
-        letter-spacing: 1px;
-
-        background: linear-gradient(
-            90deg,
-            #2563eb 0%,
-            #06b6d4 18%,
-            #22c55e 35%,
-            #eab308 52%,
-            #f97316 68%,
-            #ec4899 84%,
-            #8b5cf6 100%
-        );
-
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-        color: transparent;
-    }
-
-    /* ===== RESPONSIVE ===== */
-    @media (max-width: 700px) {
-
+    <title>Quản lý An toàn Công trường</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        /* ================= VIBACON ================= */
         .top-header {
-            flex-direction: column;
-            align-items: flex-start;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 30px;
         }
-
         .vibacon-box {
-            width: 220px;
-            height: 64px;
+            width: 240px;
+            height: 70px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #ffffff;
+            border-radius: 14px;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+            box-sizing: border-box;
+            flex-shrink: 0;
         }
-
         .vibacon-text {
-            font-size: 32px;
+            display: inline-block;
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 38px;
+            font-weight: 900;
+            line-height: 1;
+            letter-spacing: 1px;
+            background: linear-gradient(
+                90deg,
+                #2563eb 0%,
+                #06b6d4 18%,
+                #22c55e 35%,
+                #eab308 52%,
+                #f97316 68%,
+                #ec4899 84%,
+                #8b5cf6 100%
+            );
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            color: transparent;
         }
-    }
-</style>
-```
-
+        /* ================= MENU ================= */
+        .menu-item {
+            text-decoration: none;
+        }
+        /* ================= LIÊN KẾT CARD ================= */
+        .dashboard-link {
+            display: block;
+            color: inherit;
+            text-decoration: none;
+            min-width: 0;
+        }
+        .dashboard-link .stat-card {
+            height: 100%;
+            box-sizing: border-box;
+            transition:
+                transform 0.2s ease,
+                box-shadow 0.2s ease,
+                border-color 0.2s ease;
+            cursor: pointer;
+        }
+        .dashboard-link:hover .stat-card {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 24px rgba(15, 23, 42, 0.10);
+            border-color: #b8c8d0;
+        }
+        .dashboard-link:active .stat-card {
+            transform: translateY(-1px);
+        }
+        /* ================= HOẠT ĐỘNG ================= */
+        .activity-link {
+            display: block;
+            color: inherit;
+            text-decoration: none;
+            border-radius: 10px;
+        }
+        .activity-link .activity-item {
+            transition:
+                background 0.2s ease,
+                transform 0.2s ease;
+            cursor: pointer;
+        }
+        .activity-link:hover .activity-item {
+            background: #f8fafc;
+            transform: translateX(4px);
+        }
+        .activity-link:last-child .activity-item {
+            border-bottom: none;
+        }
+        /* ================= PANEL HEADER LINK ================= */
+        .panel-view-all {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 8px 12px;
+            border-radius: 7px;
+            color: #475569;
+            text-decoration: none;
+            font-size: 14px;
+            transition:
+                background 0.2s ease,
+                color 0.2s ease;
+        }
+        .panel-view-all:hover {
+            background: #eef2f5;
+            color: #263d48;
+        }
+        /* ================= SAFETY LINKS ================= */
+        .safety-link {
+            display: block;
+            color: inherit;
+            text-decoration: none;
+            border-radius: 10px;
+            transition:
+                background 0.2s ease,
+                transform 0.2s ease;
+        }
+        .safety-link:hover {
+            background: #f8fafc;
+            transform: translateX(3px);
+        }
+        .safety-link .progress-item {
+            padding: 8px;
+        }
+        /* ================= SCORE ================= */
+        .safety-score-link {
+            display: block;
+            color: inherit;
+            text-decoration: none;
+            border-radius: 12px;
+            transition: background 0.2s ease;
+        }
+        .safety-score-link:hover {
+            background: #f8fafc;
+        }
+        .safety-score-link .safety-score {
+            padding: 8px;
+        }
+        /* ================= WARNING ================= */
+        .warning-detail-link {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 42px;
+            padding: 0 22px;
+            background: #425e6b;
+            color: #ffffff;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            white-space: nowrap;
+            transition:
+                background 0.2s ease,
+                transform 0.2s ease;
+        }
+        .warning-detail-link:hover {
+            background: #304b57;
+            transform: translateY(-2px);
+        }
+        /* ================= CLICK HINT ================= */
+        .click-hint {
+            display: block;
+            margin-top: 5px;
+            color: #94a3b8;
+            font-size: 11px;
+        }
+        /* ================= RESPONSIVE ================= */
+        @media (max-width: 700px) {
+            .top-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .vibacon-box {
+                width: 220px;
+                height: 64px;
+            }
+            .vibacon-text {
+                font-size: 32px;
+            }
+        }
+    </style>
 </head>
-
 <body>
-
-```
-<!-- ================= SIDEBAR ================= -->
+<!-- =========================================================
+     SIDEBAR
+     ========================================================= -->
 <aside class="sidebar">
-
     <div class="logo">
         <h2>ATLD</h2>
         <p>AN TOÀN LAO ĐỘNG</p>
     </div>
-
     <nav>
-
         <a href="/" class="menu-item active">
             🏠
             <span>Trang chủ</span>
         </a>
-
         <a href="/cong-nhan" class="menu-item">
             👷
             <span>Công nhân</span>
         </a>
-
-        <a href="#" class="menu-item">
+        <a href="{{ url_for('bao_ho.kiem_tra_bao_ho') }}" class="menu-item">
             🦺
             <span>Kiểm tra bảo hộ</span>
         </a>
-
-        <a href="#" class="menu-item">
+        <a href="{{ url_for('vi_pham.danh_sach_vi_pham') }}" class="menu-item">
             ⚠️
             <span>Vi phạm</span>
         </a>
-
-        <a href="#" class="menu-item">
+        <a href="{{ url_for('nguy_co.danh_sach_nguy_co') }}" class="menu-item">
             🚧
             <span>Nguy cơ</span>
         </a>
-
-        <a href="#" class="menu-item">
+        <a href="{{ url_for('thong_ke.thong_ke') }}" class="menu-item">
             📊
             <span>Thống kê</span>
         </a>
-
-        <a href="#" class="menu-item">
+        <a href="{{ url_for('bao_cao.bao_cao') }}" class="menu-item">
             📄
             <span>Báo cáo</span>
         </a>
-
     </nav>
-
 </aside>
-
-
-<!-- ================= MAIN CONTENT ================= -->
+<!-- =========================================================
+     MAIN CONTENT
+     ========================================================= -->
 <main class="main-content">
-
-
-    <!-- ================= HEADER ================= -->
+    <!-- =====================================================
+         HEADER
+         ===================================================== -->
     <header class="top-header">
-
         <div>
             <h1>QUẢN LÝ AN TOÀN CÔNG TRƯỜNG</h1>
-
-            <p>
-                Hệ thống hỗ trợ cán bộ và kỹ thuật viên quản lý an toàn lao động
-            </p>
+            <p>Hệ thống hỗ trợ cán bộ và kỹ thuật viên quản lý an toàn lao động</p>
         </div>
-
-
-        <!-- VIBACON -->
         <div class="vibacon-box">
             <span class="vibacon-text">VIBACON</span>
         </div>
-
     </header>
-
-
-
-    <!-- ================= THỐNG KÊ ================= -->
+    <!-- =====================================================
+         THỐNG KÊ NHANH
+         ===================================================== -->
     <section class="dashboard-cards">
-
-
         <!-- TỔNG CÔNG NHÂN -->
-        <div class="stat-card">
-
-            <div class="stat-icon">
-                👷
+        <a href="/cong-nhan"
+           class="dashboard-link"
+           title="Xem danh sách công nhân">
+            <div class="stat-card">
+                <div class="stat-icon">👷</div>
+                <div>
+                    <p>Tổng công nhân</p>
+                    <h2>{{ stats.tong_cong_nhan }}</h2>
+                    <small class="click-hint">Nhấn để xem chi tiết</small>
+                </div>
             </div>
-
-            <div>
-                <p>Tổng công nhân</p>
-
-                <h2>
-                    {{ stats.tong_cong_nhan }}
-                </h2>
+        </a>
+        <!-- ĐANG LÀM VIỆC -->
+        <a href="/cong-nhan"
+           class="dashboard-link"
+           title="Xem công nhân đang làm việc">
+            <div class="stat-card">
+                <div class="stat-icon">🟢</div>
+                <div>
+                    <p>Đang làm việc</p>
+                    <h2>{{ stats.dang_lam_viec }}</h2>
+                    <small class="click-hint">Nhấn để xem chi tiết</small>
+                </div>
             </div>
-
-        </div>
-
-
-
+        </a>
         <!-- ĐÃ KIỂM TRA -->
-        <div class="stat-card">
-
-            <div class="stat-icon">
-                🦺
+        <a href="{{ url_for('bao_ho.kiem_tra_bao_ho') }}"
+           class="dashboard-link"
+           title="Xem kiểm tra bảo hộ">
+            <div class="stat-card">
+                <div class="stat-icon">🦺</div>
+                <div>
+                    <p>Đã kiểm tra</p>
+                    <h2>{{ stats.da_kiem_tra }}</h2>
+                    <small class="click-hint">Nhấn để xem chi tiết</small>
+                </div>
             </div>
-
-            <div>
-                <p>Đã kiểm tra</p>
-
-                <h2>98</h2>
-            </div>
-
-        </div>
-
-
-
+        </a>
         <!-- VI PHẠM -->
-        <div class="stat-card">
-
-            <div class="stat-icon">
-                ⚠️
+        <a href="{{ url_for('vi_pham.danh_sach_vi_pham') }}"
+           class="dashboard-link"
+           title="Xem danh sách vi phạm">
+            <div class="stat-card">
+                <div class="stat-icon">⚠️</div>
+                <div>
+                    <p>Vi phạm</p>
+                    <h2>{{ stats.vi_pham }}</h2>
+                    <small class="click-hint">Nhấn để xem chi tiết</small>
+                </div>
             </div>
-
-            <div>
-                <p>Vi phạm</p>
-
-                <h2>12</h2>
-            </div>
-
-        </div>
-
-
-
-        <!-- NGUY CƠ CAO -->
-        <div class="stat-card">
-
-            <div class="stat-icon">
-                🚧
-            </div>
-
-            <div>
-                <p>Nguy cơ cao</p>
-
-                <h2>5</h2>
-            </div>
-
-        </div>
-
+        </a>
     </section>
-
-
-
-    <!-- ================= 2 CỘT ================= -->
+    <!-- =====================================================
+         2 CỘT
+         ===================================================== -->
     <section class="dashboard-grid">
-
-
-        <!-- ================= HOẠT ĐỘNG GẦN ĐÂY ================= -->
+        <!-- =================================================
+             HOẠT ĐỘNG GẦN ĐÂY
+             ================================================= -->
         <div class="panel">
-
             <div class="panel-header">
-
                 <h2>Hoạt động gần đây</h2>
-
-                <button>
-                    Xem tất cả
-                </button>
-
+                <a href="{{ url_for('thong_ke.thong_ke') }}"
+                   class="panel-view-all">
+                    Xem tất cả →
+                </a>
             </div>
-
-
-
-            <!-- HOẠT ĐỘNG 1 -->
-            <div class="activity-item">
-
-                <div class="activity-icon">
-                    🦺
+            <!-- KIỂM TRA BẢO HỘ -->
+            <a href="{{ url_for('bao_ho.kiem_tra_bao_ho') }}"
+               class="activity-link">
+                <div class="activity-item">
+                    <div class="activity-icon">🦺</div>
+                    <div>
+                        <h3>Kiểm tra bảo hộ</h3>
+                        <p>{{ stats.hoat_dong_bao_ho }}</p>
+                        <small>Hôm nay</small>
+                    </div>
                 </div>
-
-                <div>
-
-                    <h3>
-                        Kiểm tra bảo hộ
-                    </h3>
-
-                    <p>
-                        Đã kiểm tra công nhân tại khu vực thi công tầng 3
-                    </p>
-
-                    <small>
-                        08:30 - Hôm nay
-                    </small>
-
+            </a>
+            <!-- VI PHẠM -->
+            <a href="{{ url_for('vi_pham.danh_sach_vi_pham') }}"
+               class="activity-link">
+                <div class="activity-item">
+                    <div class="activity-icon">⚠️</div>
+                    <div>
+                        <h3>Ghi nhận vi phạm</h3>
+                        <p>{{ stats.hoat_dong_vi_pham }}</p>
+                        <small>Hôm nay</small>
+                    </div>
                 </div>
-
-            </div>
-
-
-
-            <!-- HOẠT ĐỘNG 2 -->
-            <div class="activity-item">
-
-                <div class="activity-icon">
-                    ⚠️
+            </a>
+            <!-- NGUY CƠ -->
+            <a href="{{ url_for('nguy_co.danh_sach_nguy_co') }}"
+               class="activity-link">
+                <div class="activity-item">
+                    <div class="activity-icon">🚧</div>
+                    <div>
+                        <h3>Phát hiện nguy cơ</h3>
+                        <p>{{ stats.hoat_dong_nguy_co }}</p>
+                        <small>Hôm nay</small>
+                    </div>
                 </div>
-
-                <div>
-
-                    <h3>
-                        Ghi nhận vi phạm
-                    </h3>
-
-                    <p>
-                        Công nhân không sử dụng đầy đủ trang bị bảo hộ
-                    </p>
-
-                    <small>
-                        09:15 - Hôm nay
-                    </small>
-
-                </div>
-
-            </div>
-
-
-
-            <!-- HOẠT ĐỘNG 3 -->
-            <div class="activity-item">
-
-                <div class="activity-icon">
-                    🚧
-                </div>
-
-                <div>
-
-                    <h3>
-                        Phát hiện nguy cơ
-                    </h3>
-
-                    <p>
-                        Khu vực sàn tầng 2 có vật liệu đặt không đúng vị trí
-                    </p>
-
-                    <small>
-                        10:20 - Hôm nay
-                    </small>
-
-                </div>
-
-            </div>
-
+            </a>
         </div>
-
-
-
-        <!-- ================= TÌNH TRẠNG AN TOÀN ================= -->
+        <!-- =================================================
+             TÌNH TRẠNG AN TOÀN
+             ================================================= -->
         <div class="panel">
-
             <div class="panel-header">
-
-                <h2>
-                    Tình trạng an toàn
-                </h2>
-
+                <h2>Tình trạng an toàn</h2>
+                <a href="{{ url_for('thong_ke.thong_ke') }}"
+                   class="panel-view-all">
+                    Thống kê →
+                </a>
             </div>
-
-
-
             <!-- ĐIỂM AN TOÀN -->
-            <div class="safety-score">
-
-                <div class="score-circle">
-
-                    <strong>
-                        85
-                    </strong>
-
-                    <span>
-                        /100
-                    </span>
-
+            <a href="{{ url_for('thong_ke.thong_ke') }}"
+               class="safety-score-link"
+               title="Xem thống kê an toàn">
+                <div class="safety-score">
+                    <div class="score-circle">
+                        <strong>{{ stats.diem_an_toan }}</strong>
+                        <span>/100</span>
+                    </div>
+                    <div>
+                        <h3>Mức an toàn: {{ stats.muc_an_toan }}</h3>
+                        <p>Điểm an toàn hiện tại của công trường</p>
+                    </div>
                 </div>
-
-
-                <div>
-
-                    <h3>
-                        Mức an toàn: TỐT
-                    </h3>
-
-                    <p>
-                        Điểm an toàn hiện tại của công trường
-                    </p>
-
-                </div>
-
-            </div>
-
-
-
+            </a>
             <!-- TRANG BỊ BẢO HỘ -->
-            <div class="progress-item">
-
-                <div class="progress-title">
-
-                    <span>
-                        Trang bị bảo hộ
-                    </span>
-
-                    <strong>
-                        90%
-                    </strong>
-
-                </div>
-
-
-                <div class="progress-bar">
-
-                    <div
-                        class="progress"
-                        style="width: 90%;">
+            <a href="{{ url_for('bao_ho.kiem_tra_bao_ho') }}"
+               class="safety-link"
+               title="Xem kiểm tra bảo hộ">
+                <div class="progress-item">
+                    <div class="progress-title">
+                        <span>Trang bị bảo hộ</span>
+                        <strong>{{ stats.ty_le_bao_ho_dat }}%</strong>
                     </div>
-
-                </div>
-
-            </div>
-
-
-
-            <!-- TUÂN THỦ -->
-            <div class="progress-item">
-
-                <div class="progress-title">
-
-                    <span>
-                        Tuân thủ quy định
-                    </span>
-
-                    <strong>
-                        85%
-                    </strong>
-
-                </div>
-
-
-                <div class="progress-bar">
-
-                    <div
-                        class="progress"
-                        style="width: 85%;">
+                    <div class="progress-bar">
+                        <div class="progress"
+                             style="width: {{ stats.ty_le_bao_ho_dat }}%;">
+                        </div>
                     </div>
-
                 </div>
-
-            </div>
-
-
-
+            </a>
+            <!-- TUÂN THỦ QUY ĐỊNH -->
+            <a href="{{ url_for('vi_pham.danh_sach_vi_pham') }}"
+               class="safety-link"
+               title="Xem tình hình vi phạm">
+                <div class="progress-item">
+                    <div class="progress-title">
+                        <span>Tuân thủ quy định</span>
+                        <strong>{{ stats.ty_le_tuan_thu }}%</strong>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress"
+                             style="width: {{ stats.ty_le_tuan_thu }}%;">
+                        </div>
+                    </div>
+                </div>
+            </a>
             <!-- KIỂM SOÁT NGUY CƠ -->
-            <div class="progress-item">
-
-                <div class="progress-title">
-
-                    <span>
-                        Kiểm soát nguy cơ
-                    </span>
-
-                    <strong>
-                        80%
-                    </strong>
-
-                </div>
-
-
-                <div class="progress-bar">
-
-                    <div
-                        class="progress"
-                        style="width: 80%;">
+            <a href="{{ url_for('nguy_co.danh_sach_nguy_co') }}"
+               class="safety-link"
+               title="Xem tình hình nguy cơ">
+                <div class="progress-item">
+                    <div class="progress-title">
+                        <span>Kiểm soát nguy cơ</span>
+                        <strong>{{ stats.ty_le_kiem_soat_nguy_co }}%</strong>
                     </div>
-
+                    <div class="progress-bar">
+                        <div class="progress"
+                             style="width: {{ stats.ty_le_kiem_soat_nguy_co }}%;">
+                        </div>
+                    </div>
                 </div>
-
-            </div>
-
+            </a>
         </div>
-
     </section>
-
-
-
-    <!-- ================= CẢNH BÁO ================= -->
+    <!-- =====================================================
+         CẢNH BÁO
+         ===================================================== -->
     <section class="warning-box">
-
         <div>
-
-            <h3>
-                ⚠️ Cảnh báo an toàn
-            </h3>
-
+            <h3>⚠️ Cảnh báo an toàn</h3>
+            {% if stats.nguy_co_cao > 0 %}
             <p>
-                Hiện có 5 nguy cơ mức cao cần được xử lý và kiểm tra lại.
+                Hiện có {{ stats.nguy_co_cao }} nguy cơ mức cao
+                được ghi nhận hôm nay cần được ưu tiên kiểm tra và xử lý.
             </p>
-
+            {% elif stats.nguy_co_chua_xu_ly > 0 %}
+            <p>
+                Hiện có {{ stats.nguy_co_chua_xu_ly }} nguy cơ chưa xử lý
+                cần được theo dõi và kiểm tra.
+            </p>
+            {% elif stats.nguy_co_dang_xu_ly > 0 %}
+            <p>
+                Hiện có {{ stats.nguy_co_dang_xu_ly }} nguy cơ đang được xử lý.
+            </p>
+            {% else %}
+            <p>
+                Hiện không có nguy cơ mức cao chưa được kiểm soát trong ngày hôm nay.
+            </p>
+            {% endif %}
         </div>
-
-
-        <button>
+        <a href="{{ url_for('nguy_co.danh_sach_nguy_co') }}"
+           class="warning-detail-link">
             Xem chi tiết
-        </button>
-
+        </a>
     </section>
-
-
-
-    <!-- ================= FOOTER ================= -->
+    <!-- =====================================================
+         FOOTER
+         ===================================================== -->
     <footer>
-
-        <p>
-            Phần mềm quản lý an toàn công trường
-        </p>
-
-        <p>
-            © 2026
-        </p>
-
+        <p>Phần mềm quản lý an toàn công trường</p>
+        <p>© 2026</p>
     </footer>
-
-
 </main>
-```
-
 </body>
 </html>
