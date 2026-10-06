@@ -1730,3 +1730,1201 @@ footer {
     -webkit-text-fill-color: transparent;
     background-clip: text;
 }
+/* ============================================================
+   TRANG KIỂM TRA BẢO HỘ LAO ĐỘNG
+   ============================================================ */
+
+
+/* ============================================================
+   1. LOGO VIBACON
+   ============================================================ */
+
+.vibacon-box {
+    width: 210px;
+    height: 62px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: #ffffff;
+
+    border: 1px solid #e7ebee;
+    border-radius: 14px;
+
+    box-shadow:
+        0 4px 14px rgba(0, 0, 0, 0.06);
+
+    flex-shrink: 0;
+}
+
+
+.vibacon-text {
+    font-size: 32px;
+    font-weight: 900;
+    letter-spacing: 1px;
+
+    background: linear-gradient(
+        90deg,
+        #2563eb,
+        #06b6d4,
+        #22c55e,
+        #eab308,
+        #f97316,
+        #ec4899,
+        #8b5cf6
+    );
+
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+
+    background-clip: text;
+    color: transparent;
+}
+
+
+/* ============================================================
+   2. PANEL KIỂM TRA TRONG NGÀY
+   ============================================================ */
+
+.daily-check-panel {
+    margin-top: 5px;
+}
+
+
+.date-form {
+    display: flex;
+    align-items: center;
+}
+
+
+.date-form input {
+    height: 42px;
+
+    padding: 0 14px;
+
+    border:
+        1px solid #d8e0e5;
+
+    border-radius: 9px;
+
+    background: #ffffff;
+
+    color: #344b59;
+
+    font-size: 14px;
+
+    outline: none;
+
+    cursor: pointer;
+}
+
+
+.date-form input:focus {
+    border-color: #526d7a;
+
+    box-shadow:
+        0 0 0 3px
+        rgba(82, 109, 122, 0.10);
+}
+
+
+/* ============================================================
+   3. TIẾN ĐỘ KIỂM TRA
+   ============================================================ */
+
+.inspection-progress {
+    padding: 20px;
+
+    margin-bottom: 20px;
+
+    background: #f8fafb;
+
+    border:
+        1px solid #e5eaed;
+
+    border-radius: 12px;
+}
+
+
+.progress-info {
+    display: flex;
+
+    justify-content: space-between;
+    align-items: center;
+
+    margin-bottom: 10px;
+
+    color: #45555e;
+
+    font-size: 14px;
+}
+
+
+.progress-info strong {
+    color: #263944;
+
+    font-size: 15px;
+}
+
+
+.inspection-progress .progress-bar {
+    width: 100%;
+    height: 10px;
+
+    background: #e6eaed;
+
+    border-radius: 20px;
+
+    overflow: hidden;
+}
+
+
+.progress-fill {
+    height: 100%;
+
+    background: #1f6f5b;
+
+    border-radius: 20px;
+
+    transition:
+        width 0.35s ease;
+}
+
+
+.progress-footer {
+    display: flex;
+
+    justify-content: space-between;
+
+    margin-top: 9px;
+
+    color: #7a8790;
+
+    font-size: 12px;
+}
+
+
+/* ============================================================
+   4. NÚT THAO TÁC KIỂM TRA
+   ============================================================ */
+
+.daily-actions {
+    display: flex;
+
+    align-items: center;
+
+    gap: 12px;
+
+    margin-bottom: 22px;
+}
+
+
+.daily-actions form {
+    margin: 0;
+}
+
+
+.all-pass-button,
+.violation-button {
+    min-height: 44px;
+
+    padding: 0 18px;
+
+    border: none;
+
+    border-radius: 9px;
+
+    font-size: 14px;
+
+    font-weight: 650;
+
+    cursor: pointer;
+
+    transition:
+        all 0.2s ease;
+}
+
+
+/* Nút tất cả đạt */
+
+.all-pass-button {
+    background: #1f6f5b;
+
+    color: #ffffff;
+}
+
+
+.all-pass-button:hover {
+    background: #185947;
+
+    transform:
+        translateY(-1px);
+
+    box-shadow:
+        0 5px 12px
+        rgba(31, 111, 91, 0.20);
+}
+
+
+/* Nút ghi nhận không đạt */
+
+.violation-button {
+    background: #fff7ed;
+
+    color: #b45309;
+
+    border:
+        1px solid #fed7aa;
+}
+
+
+.violation-button:hover {
+    background: #ffedd5;
+
+    border-color: #fdba74;
+
+    transform:
+        translateY(-1px);
+}
+
+
+/* ============================================================
+   5. TÌM KIẾM + LỌC CÔNG NHÂN
+   ============================================================ */
+
+.worker-filter {
+    display: grid;
+
+    grid-template-columns:
+        minmax(0, 1fr) 210px;
+
+    gap: 12px;
+
+    margin-bottom: 18px;
+}
+
+
+.worker-search-main {
+    position: relative;
+}
+
+
+.worker-search-main .search-icon {
+    position: absolute;
+
+    left: 15px;
+    top: 50%;
+
+    transform:
+        translateY(-50%);
+
+    color: #90a4ae;
+
+    font-size: 17px;
+
+    pointer-events: none;
+}
+
+
+.worker-search-main input {
+    width: 100%;
+    height: 46px;
+
+    padding:
+        0 15px 0 42px;
+
+    border:
+        1px solid #d8e0e5;
+
+    border-radius: 10px;
+
+    background: #f9fbfc;
+
+    color: #263944;
+
+    font-size: 14px;
+
+    outline: none;
+
+    transition: 0.2s;
+}
+
+
+.worker-search-main input:focus {
+    background: #ffffff;
+
+    border-color: #526d7a;
+
+    box-shadow:
+        0 0 0 3px
+        rgba(82, 109, 122, 0.10);
+}
+
+
+.worker-filter select {
+    width: 100%;
+    height: 46px;
+
+    padding: 0 12px;
+
+    border:
+        1px solid #d8e0e5;
+
+    border-radius: 10px;
+
+    background: #ffffff;
+
+    color: #45555e;
+
+    font-size: 14px;
+
+    outline: none;
+
+    cursor: pointer;
+}
+
+
+.worker-filter select:focus {
+    border-color: #526d7a;
+}
+
+
+/* ============================================================
+   6. BẢNG KIỂM TRA CÔNG NHÂN
+   ============================================================ */
+
+.daily-table-wrapper {
+    width: 100%;
+
+    overflow-x: auto;
+
+    border:
+        1px solid #e5eaed;
+
+    border-radius: 12px;
+
+    background: #ffffff;
+}
+
+
+.daily-check-table {
+    width: 100%;
+
+    min-width: 1050px;
+
+    border-collapse:
+        separate;
+
+    border-spacing: 0;
+
+    background: #ffffff;
+}
+
+
+/* Header bảng */
+
+.daily-check-table thead th {
+    padding: 14px 15px;
+
+    background: #f4f7f8;
+
+    color: #52636c;
+
+    border-bottom:
+        1px solid #dfe6e9;
+
+    font-size: 12px;
+
+    font-weight: 700;
+
+    text-align: left;
+
+    text-transform: uppercase;
+
+    letter-spacing: 0.2px;
+
+    white-space: nowrap;
+}
+
+
+/* Nội dung */
+
+.daily-check-table tbody td {
+    padding: 14px 15px;
+
+    color: #45555e;
+
+    border-bottom:
+        1px solid #edf0f2;
+
+    font-size: 13px;
+
+    vertical-align: middle;
+}
+
+
+.daily-check-table tbody tr {
+    transition:
+        background 0.15s ease;
+}
+
+
+.daily-check-table tbody tr:hover {
+    background: #f8fafb;
+}
+
+
+.daily-check-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+
+/* STT */
+
+.daily-check-table th:first-child,
+.daily-check-table td:first-child {
+    width: 60px;
+
+    text-align: center;
+}
+
+
+/* Mã công nhân */
+
+.worker-code {
+    display: inline-flex;
+
+    align-items: center;
+
+    padding: 5px 9px;
+
+    background: #edf4f7;
+
+    color: #344b59;
+
+    border-radius: 7px;
+
+    font-size: 12px;
+
+    font-weight: 700;
+}
+
+
+/* Ghi chú */
+
+.worker-note {
+    max-width: 230px;
+
+    color: #6f7d84 !important;
+
+    line-height: 1.45;
+}
+
+
+/* ============================================================
+   7. TRẠNG THÁI KIỂM TRA
+   ============================================================ */
+
+.status-badge {
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    min-width: 105px;
+
+    padding: 6px 10px;
+
+    border-radius: 20px;
+
+    font-size: 12px;
+
+    font-weight: 650;
+
+    white-space: nowrap;
+}
+
+
+/* Đạt */
+
+.status-pass {
+    color: #24704f;
+
+    background: #e9f7f0;
+
+    border:
+        1px solid #c9eadb;
+}
+
+
+/* Không đạt */
+
+.status-fail {
+    color: #b33a3a;
+
+    background: #fff0f0;
+
+    border:
+        1px solid #f0cece;
+}
+
+
+/* Chưa kiểm tra */
+
+.status-pending {
+    color: #6b7479;
+
+    background: #f0f2f3;
+
+    border:
+        1px solid #e0e4e6;
+}
+
+
+/* ============================================================
+   8. NÚT KIỂM TRA TRONG BẢNG
+   ============================================================ */
+
+.edit-check-button {
+    padding: 8px 13px;
+
+    border:
+        1px solid #d8e1e5;
+
+    border-radius: 8px;
+
+    background: #ffffff;
+
+    color: #344b59;
+
+    font-size: 12px;
+
+    font-weight: 650;
+
+    cursor: pointer;
+
+    transition:
+        all 0.2s ease;
+}
+
+
+.edit-check-button:hover {
+    background: #344b59;
+
+    border-color: #344b59;
+
+    color: #ffffff;
+}
+
+
+/* Không có dữ liệu */
+
+.empty-table {
+    padding: 45px 20px !important;
+
+    color: #7a8790 !important;
+
+    text-align: center;
+}
+
+
+/* ============================================================
+   9. MODAL KIỂM TRA BẢO HỘ
+   ============================================================ */
+
+.inspection-modal {
+    position: fixed;
+
+    inset: 0;
+
+    z-index: 2000;
+
+    display: none;
+
+    align-items: center;
+    justify-content: center;
+
+    padding: 20px;
+
+    background:
+        rgba(20, 32, 38, 0.58);
+}
+
+
+.inspection-modal.show {
+    display: flex;
+}
+
+
+body.modal-open {
+    overflow: hidden;
+}
+
+
+.inspection-modal-box {
+    width: 650px;
+
+    max-width: 100%;
+
+    max-height: 90vh;
+
+    overflow-y: auto;
+
+    padding: 28px;
+
+    background: #ffffff;
+
+    border-radius: 16px;
+
+    box-shadow:
+        0 22px 65px
+        rgba(0, 0, 0, 0.22);
+
+    animation:
+        inspectionModalAppear
+        0.20s ease;
+}
+
+
+@keyframes inspectionModalAppear {
+
+    from {
+        opacity: 0;
+
+        transform:
+            translateY(12px)
+            scale(0.99);
+    }
+
+    to {
+        opacity: 1;
+
+        transform:
+            translateY(0)
+            scale(1);
+    }
+
+}
+
+
+/* ============================================================
+   10. HEADER MODAL
+   ============================================================ */
+
+.inspection-modal .modal-header {
+    display: flex;
+
+    justify-content: space-between;
+    align-items: flex-start;
+
+    gap: 20px;
+
+    padding-bottom: 18px;
+
+    margin-bottom: 22px;
+
+    border-bottom:
+        1px solid #edf0f2;
+}
+
+
+.inspection-modal .modal-header h2 {
+    margin: 0 0 5px 0;
+
+    color: #263944;
+
+    font-size: 22px;
+}
+
+
+.inspection-modal .modal-header p {
+    margin: 0;
+
+    color: #7a8790;
+
+    font-size: 14px;
+}
+
+
+.modal-close {
+    width: 36px;
+    height: 36px;
+
+    flex-shrink: 0;
+
+    border: none;
+
+    border-radius: 8px;
+
+    background: #f1f3f4;
+
+    color: #52636c;
+
+    font-size: 24px;
+
+    line-height: 1;
+
+    cursor: pointer;
+}
+
+
+.modal-close:hover {
+    background: #e3e7e9;
+}
+
+
+/* ============================================================
+   11. DANH SÁCH PPE TRONG MODAL
+   ============================================================ */
+
+.modal-ppe-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(2, minmax(0, 1fr));
+
+    gap: 12px;
+
+    margin-bottom: 22px;
+}
+
+
+.modal-ppe-item {
+    padding: 14px;
+
+    background: #f8fafb;
+
+    border:
+        1px solid #e5eaed;
+
+    border-radius: 11px;
+}
+
+
+.modal-ppe-item label {
+    display: block;
+
+    margin-bottom: 9px;
+
+    color: #344b59;
+
+    font-size: 13px;
+
+    font-weight: 650;
+}
+
+
+.modal-ppe-item select {
+    width: 100%;
+    height: 41px;
+
+    padding: 0 10px;
+
+    border:
+        1px solid #d8e0e5;
+
+    border-radius: 8px;
+
+    background: #ffffff;
+
+    color: #45555e;
+
+    font-size: 13px;
+
+    outline: none;
+}
+
+
+.modal-ppe-item select:focus {
+    border-color: #526d7a;
+
+    box-shadow:
+        0 0 0 3px
+        rgba(82, 109, 122, 0.08);
+}
+
+
+/* ============================================================
+   12. FORM TRONG MODAL
+   ============================================================ */
+
+.modal-form-group {
+    margin-bottom: 17px;
+}
+
+
+.modal-form-group label {
+    display: block;
+
+    margin-bottom: 7px;
+
+    color: #45555e;
+
+    font-size: 13px;
+
+    font-weight: 650;
+}
+
+
+.modal-form-group input,
+.modal-form-group textarea {
+    width: 100%;
+
+    padding: 11px 12px;
+
+    border:
+        1px solid #d8e0e5;
+
+    border-radius: 9px;
+
+    background: #fafbfc;
+
+    color: #263944;
+
+    font-family: Arial, sans-serif;
+
+    font-size: 14px;
+
+    outline: none;
+
+    transition: 0.2s;
+}
+
+
+.modal-form-group input {
+    height: 44px;
+}
+
+
+.modal-form-group textarea {
+    min-height: 90px;
+
+    resize: vertical;
+
+    line-height: 1.5;
+}
+
+
+.modal-form-group input:focus,
+.modal-form-group textarea:focus {
+    background: #ffffff;
+
+    border-color: #526d7a;
+
+    box-shadow:
+        0 0 0 3px
+        rgba(82, 109, 122, 0.10);
+}
+
+
+/* ============================================================
+   13. NÚT TRONG MODAL
+   ============================================================ */
+
+.inspection-modal .modal-actions {
+    display: flex;
+
+    justify-content: flex-end;
+
+    gap: 10px;
+
+    margin-top: 24px;
+
+    padding-top: 20px;
+
+    border-top:
+        1px solid #edf0f2;
+}
+
+
+.modal-cancel-button,
+.modal-save-button {
+    min-height: 43px;
+
+    padding: 0 18px;
+
+    border: none;
+
+    border-radius: 9px;
+
+    font-size: 14px;
+
+    font-weight: 650;
+
+    cursor: pointer;
+
+    transition:
+        all 0.2s ease;
+}
+
+
+.modal-cancel-button {
+    background: #f0f2f3;
+
+    color: #52636c;
+}
+
+
+.modal-cancel-button:hover {
+    background: #e3e7e9;
+}
+
+
+.modal-save-button {
+    background: #1f6f5b;
+
+    color: #ffffff;
+}
+
+
+.modal-save-button:hover {
+    background: #185947;
+
+    transform:
+        translateY(-1px);
+}
+
+
+/* ============================================================
+   14. RESPONSIVE - TABLET
+   ============================================================ */
+
+@media (max-width: 900px) {
+
+    .worker-filter {
+        grid-template-columns: 1fr;
+    }
+
+
+    .daily-actions {
+        flex-wrap: wrap;
+    }
+
+
+    .progress-footer {
+        gap: 10px;
+
+        flex-wrap: wrap;
+    }
+
+}
+
+
+/* ============================================================
+   15. RESPONSIVE - ĐIỆN THOẠI
+   ============================================================ */
+
+@media (max-width: 600px) {
+
+    .vibacon-box {
+        width: 180px;
+        height: 55px;
+    }
+
+
+    .vibacon-text {
+        font-size: 27px;
+    }
+
+
+    .daily-actions {
+        flex-direction: column;
+
+        align-items: stretch;
+    }
+
+
+    .daily-actions form {
+        width: 100%;
+    }
+
+
+    .all-pass-button,
+    .violation-button {
+        width: 100%;
+    }
+
+
+    .panel-header {
+        align-items: flex-start;
+
+        gap: 15px;
+
+        flex-direction: column;
+    }
+
+
+    .date-form,
+    .date-form input {
+        width: 100%;
+    }
+
+
+    .progress-footer {
+        flex-direction: column;
+    }
+
+
+    .modal-ppe-grid {
+        grid-template-columns: 1fr;
+    }
+
+
+    .inspection-modal-box {
+        padding: 20px;
+    }
+
+
+    .inspection-modal .modal-actions {
+        flex-direction: column-reverse;
+    }
+
+
+    .modal-cancel-button,
+    .modal-save-button {
+        width: 100%;
+    }
+
+}
+/* =====================================================
+   TRANG QUẢN LÝ VI PHẠM
+   ===================================================== */
+.violation-panel {
+    margin-top: 24px;
+}
+.violation-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+}
+.violation-header h2 {
+    margin: 0 0 6px 0;
+}
+.violation-header p {
+    margin: 0;
+    color: #6b7280;
+}
+.violation-actions {
+    display: flex;
+    justify-content: flex-end;
+    margin: 20px 0;
+}
+.add-violation-button {
+    border: none;
+    border-radius: 10px;
+    padding: 12px 20px;
+    background: #16a34a;
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: 0.2s;
+}
+.add-violation-button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+}
+.violation-filter {
+    margin-bottom: 20px;
+}
+.violation-table {
+    min-width: 1250px;
+}
+.violation-table th {
+    white-space: nowrap;
+}
+.violation-table td {
+    vertical-align: middle;
+}
+.violation-content {
+    min-width: 220px;
+    max-width: 320px;
+    white-space: normal;
+    line-height: 1.5;
+}
+.violation-level {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 82px;
+    padding: 6px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+.level-high {
+    background: #fee2e2;
+    color: #dc2626;
+}
+.level-medium {
+    background: #fef3c7;
+    color: #d97706;
+}
+.level-low {
+    background: #dcfce7;
+    color: #16a34a;
+}
+.violation-row-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    white-space: nowrap;
+}
+.violation-detail-button {
+    border: none;
+    border-radius: 8px;
+    padding: 8px 11px;
+    background: #e0f2fe;
+    color: #0369a1;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: 0.2s;
+}
+.violation-detail-button:hover {
+    background: #bae6fd;
+}
+.violation-document-button {
+    border: none;
+    border-radius: 8px;
+    padding: 8px 11px;
+    background: #ede9fe;
+    color: #6d28d9;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: 0.2s;
+}
+.violation-document-button:hover {
+    background: #ddd6fe;
+}
+#violationModal .inspection-modal-box {
+    max-width: 680px;
+}
+#violationModal input,
+#violationModal select,
+#violationModal textarea {
+    width: 100%;
+    box-sizing: border-box;
+}
+#violationModal textarea {
+    min-height: 90px;
+    resize: vertical;
+}
+@media (max-width: 900px) {
+    .violation-header {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+    .violation-actions {
+        justify-content: flex-start;
+    }
+    .violation-row-actions {
+        align-items: stretch;
+        flex-direction: column;
+    }
+}
